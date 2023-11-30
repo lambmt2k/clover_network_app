@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { colors } from "../../themes/style";
 
 export const styles = StyleSheet.create({ 
     container: { 
@@ -7,14 +8,21 @@ export const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center',
         position:"relative" 
-    }, 
+    },
+    label: {
+        marginBottom: 8,
+        color: colors.secondary,
+        fontSize: 14,
+        fontWeight: '500'
+    },
     radioGroup: { 
         flexDirection: 'row', 
         alignItems: 'center', 
         justifyContent: 'space-around', 
-        marginTop: 20, 
+        
         borderRadius: 8, 
-        backgroundColor: 'white', 
+        borderWidth:1,
+        borderColor:colors.primary,
         padding: 16, 
         elevation: 4, 
         shadowColor: '#000', 
@@ -30,8 +38,8 @@ export const styles = StyleSheet.create({
         alignItems: 'center', 
     }, 
     radioLabel: { 
-        marginLeft: 8, 
-        fontSize: 16, 
-        color: '#000', 
+        marginLeft: 4, 
+        fontSize: 14, 
+        color: colors.black, 
     }, 
 });

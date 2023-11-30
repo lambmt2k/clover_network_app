@@ -102,56 +102,7 @@ const LoginScreen = () => {
           <Button title="Sign In" onPress={formik.handleSubmit} />
           {loading && (<Loader/>)}
           {error && (<Text style={styles.loginErrorText}>{error}</Text>) }
-          {/* <Formik
-            validateOnMount={true}
-            validationSchema={loginValidationSchema}
-            initialValues={{ email: "", password: "" }}
-            onSubmit={(values) => console.log(values)}
-          >
-            {({
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              values,
-              errors,
-              touched,
-              isValid,
-            }) => (
-              <>
-                <Input
-                  label="E-mail"
-                  name="email"
-                  placeholder="example@gmail.com"
-                  style={styles.textInput}
-                  onChangeText={handleChange("email")}
-                  onBlur={handleBlur("email")}
-                  value={values.email}
-                  keyboardType="email-address"
-                />
-                {errors.email && touched.email && (
-                  <Text style={styles.errorText}>{errors.email}</Text>
-                )}
-                <Input
-                  isPassword
-                  label="Password"
-                  name="password"
-                  placeholder="*******"
-                  onChangeText={handleChange("password")}
-                  onBlur={handleBlur("password")}
-                  value={values.password}
-                  secureTextEntry
-                />
-                {errors.password && touched.password && (
-                  <Text style={styles.errorText}>{errors.password}</Text>
-                )}
-                <Button
-                  title="Sign In"
-                  onPress={() => navigation.navigate("Home")}
-                />
-              </>
-            )}
-          </Formik> */}
-
+          
           <View className="flex flex-row mt-5">
             <Text className="text-lg">Don't have account? </Text>
             <View>

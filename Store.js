@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import persistReducer from 'redux-persist/es/persistReducer';
 import persistStore from 'redux-persist/es/persistStore';
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
+import userReducer from "./src/features/Auth/UserFeature/UserSlice"
 
 
 
@@ -21,6 +22,7 @@ const userPersistConfig = {
 }
 const rootReducer = combineReducers({
   login:  persistReducer(userPersistConfig, loginReducer),
+  user: userReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

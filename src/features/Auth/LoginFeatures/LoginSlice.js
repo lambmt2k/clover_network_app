@@ -12,6 +12,7 @@ export const loginUser = createAsyncThunk(
   async (loginInfo) => {
     try {
       const req = await AuthApi.loginApi(loginInfo);
+      
       const res = await req.data;
       return res;
     } catch (error) {
@@ -35,18 +36,20 @@ const loginSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, actions) => {
         state.loading = false;
-
-        if (actions.payload.messageEN === "Profile empty ") {
+        
+        if (actions.payload.code === 101) {
           state.error = actions.payload.messageEN;
         }
 
-        if (actions.payload.messageEN === "Email or password is incorrect") {
+        if (actions.payload.code === 1) {
           state.error = "Email or password is incorrect";
         }
-        if (actions.payload.messageEN === "Action success") {
-          state.error = "Action success";
+        if (actions.payload.code === -1) {
+          state.error = null;
           state.user = actions.payload.data;
           
+        }if(actions.payload.code === 3){
+          state.error = "Account doesn't activated. Please verify account by link send to your email before first login";
         }
       })
       .addCase(loginUser.rejected, (state, action) => {

@@ -1,8 +1,8 @@
+
 import { StyleSheet, Platform, StatusBar } from 'react-native';
 
 export default StyleSheet.create({
     droidSafeArea: {
-        flex: 1,
         paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight+ 25) : 0
     },
 });
@@ -14,4 +14,7 @@ export const colors = {
     black: '#202124',
     white: '#FFFFFF',
     lightGrey: '#DADADA',
+
+    background:"#f2f2f2"
 }
+

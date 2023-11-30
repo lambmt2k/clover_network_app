@@ -27,5 +27,10 @@ export const styles = StyleSheet.create({
         width: 24,
         height: 24,
         marginHorizontal: 16,
+    },
+    calendar:{
+        width: 24,
+        height: 24,
+        marginHorizontal: 16,
     }
 })
