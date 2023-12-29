@@ -14,6 +14,7 @@ export const loginUser = createAsyncThunk(
       const req = await AuthApi.loginApi(loginInfo);
       
       const res = await req.data;
+      
       return res;
     } catch (error) {
       console.log(error);

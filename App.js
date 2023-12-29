@@ -22,10 +22,11 @@ import {
   BeVietnamPro_800ExtraBold_Italic,
   BeVietnamPro_900Black,
   BeVietnamPro_900Black_Italic,
-} from '@expo-google-fonts/be-vietnam-pro'
+} from "@expo-google-fonts/be-vietnam-pro";
 import AppLoading from "expo-app-loading";
-import * as SplashScreen from "expo-splash-screen"
+import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 function App() {
   let [fontsLoaded] = useFonts({
@@ -48,21 +49,23 @@ function App() {
     BeVietnamPro_900Black,
     BeVietnamPro_900Black_Italic,
   });
-  useEffect(()=>{
+  useEffect(() => {
     async function prepare() {
       await SplashScreen.preventAutoHideAsync();
     }
-    prepare()
-  },[])
+    prepare();
+  }, []);
   if (!fontsLoaded) {
-    return undefined
-  }else{
-    SplashScreen.hideAsync()
+    return undefined;
+  } else {
+    SplashScreen.hideAsync();
   }
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor} loading={null}>
-        <Routes />
+        <SafeAreaProvider>
+          <Routes />
+        </SafeAreaProvider>
       </PersistGate>
     </Provider>
   );

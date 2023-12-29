@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Platform } from 'react-native'
 import React from 'react'
 
 
@@ -8,7 +8,8 @@ const StyledText = ({title,textStyle}) => {
     
   return (
     
-      <Text className="font-bold" style={[{fontFamily:"BeVietnamPro_400Regular"},textStyle]}>{title}</Text>
+      <Text  style={[{fontFamily:"BeVietnamPro_400Regular"},textStyle]}>{title}</Text>
+      
     
   )
 }

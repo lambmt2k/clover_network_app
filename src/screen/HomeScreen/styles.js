@@ -2,16 +2,15 @@ import { StyleSheet } from "react-native";
 import { colors } from "../../themes/style";
 
 export const styles = StyleSheet.create({
-  topSafeArea: {
-    backgroundColor: colors.white,
-    flex:0
-  },
+  
   container: {
-    backgroundColor:colors.background
+    backgroundColor:colors.background,
+    marginBottom:-35,
+    flex:1
   },
   appbarContainer: {
     paddingHorizontal: 8,
-    marginBottom: 1,
+    
     backgroundColor: colors.white,
     height: 50,
     justifyContent: "space-between",
@@ -33,6 +32,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     paddingHorizontal: 8,
+    marginBottom:4
   },
   user: {
     flexDirection: "row",
@@ -50,19 +50,23 @@ export const styles = StyleSheet.create({
   },
   pressArea: {
     flex: 1,
-    marginRight:10
+    marginRight:10,
+    flexDirection:"row",
+    alignItems:"center",
+    justifyContent:"space-between"
   },
   userText: {
-    color:colors.black,
+    
     fontSize: 16,
     paddingLeft:8,
-    fontFamily:"BeVietnamPro_200ExtraLight_Italic"
+    fontFamily:"BeVietnamPro_300Light_Italic"
+    
   },
   upload: {
     width: 24,
     height:24,
   },
   flatlistContainer:{
-    marginBottom:150
+    flex:1
   }
 });

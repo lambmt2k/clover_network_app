@@ -3,7 +3,7 @@ import { Image, TouchableOpacity, View } from "react-native";
 import LoginScreen from "./src/screen/LoginScreen/LoginScreen";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "./src/screen/HomeScreen/HomeScreen";
+
 import SignUpScreen from "./src/screen/SignUpScreen/SignUpScreen";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -19,10 +19,27 @@ import { Entypo, Ionicons } from "@expo/vector-icons";
 import { colors } from "./src/themes/style";
 import FriendScreen from "./src/screen/FriendScreen/FriendScreen";
 import MenuScreen from "./src/screen/MenuScreen/MenuScreen";
+import Loader from "./src/components/Loader/Loader";
+import HomeScreen from "./src/screen/HomeScreen/HomeScreen";
+import GroupScreen from "./src/screen/GroupScreen/GroupScreen";
+import EditUserProfileScreen from "./src/screen/EditUserProfileScreen/EditUserProfileScreen";
+import EditUserInfoScreen from "./src/screen/EditUserInfoScreen/EditUserInfoScreen";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import GroupHomeScreen from "./src/screen/GroupHomeScreen/GroupHomeScreen";
+import GroupHeader from "./src/components/GroupHeader/GroupHeader";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { ColorSchemeStore } from "nativewind/dist/style-sheet/color-scheme";
+import StyledText from "./src/components/StyledText/StyledText";
+import { createStackNavigator } from "@react-navigation/stack";
+import CreateGroupScreen from "./src/screen/CreateGroupScreen/CreateGroupScreen";
+import InvitePeople from "./src/screen/InvitePeopleScreen/InvitePeople";
+import GroupDetailScreen from "./src/screen/GroupDetailScreen/GroupDetailScreen";
+import SearchScreen from "./src/screen/SearchScreen/SearchScreen";
+import SearchResultScreen from "./src/screen/SearchResultScreen/SearchResultScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
+const TopTab = createMaterialTopTabNavigator();
 const CustomTabButton = (props) => (
   <TouchableOpacity
     {...props}
@@ -33,9 +50,66 @@ const CustomTabButton = (props) => (
     }
   />
 );
+const HomeStack = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName="HomeScreen"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="UserScreen" component={UserProfileScreen} />
+      <Stack.Screen
+        name="EditUserProfileScreen"
+        component={EditUserProfileScreen}
+      />
+      <Stack.Screen name="EditUserInfoScreen" component={EditUserInfoScreen} />
+      <Stack.Screen name="SearchScreen" component={SearchScreen}/>
+      <Stack.Screen name="SearchResultScreen" component={SearchResultScreen}/>
+    </Stack.Navigator>
+  );
+};
+const GroupStack = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName="GroupHomeScreen"
+      screenOptions={{
+        headerShown: false,
+        
+      }}
+    >
+      <Stack.Screen name="GroupHomeScreen" component={GroupHomeScreen} />
+      <Stack.Screen name="GroupListScreen" component={GroupScreen} />
+      <Stack.Screen name="GroupDetailScreen" component={GroupDetailScreen} />
+    </Stack.Navigator>
+  );
+};
+// const GroupMainScreen = () => {
+//   return (
+//     <>
+//       <GroupHeader />
+//       <GroupTab />
+//     </>
+//   );
+// };
+// const GroupStack = () => {
+//   return (
+//     <Stack.Navigator
+//       initialRouteName="GroupScreen"
+//       screenOptions={{
+//         headerShown: false,
+//       }}
+//     >
+//       <Stack.Screen name="GroupScreen" component={GroupMainScreen} />
+//       <Stack.Screen name="GroupDetailScreen" component={GroupDetailScreen} />
+//     </Stack.Navigator>
+//   );
+// };
 
 const MyTabs = () => {
-  const { userInfo } = useSelector((state) => state.user);
+  const { userInfo, loading } = useSelector((state) => state.user);
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -46,7 +120,7 @@ const MyTabs = () => {
     >
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={HomeStack}
         options={{
           tabBarIcon: ({ focused }) => {
             return focused ? (
@@ -67,6 +141,24 @@ const MyTabs = () => {
               <Ionicons name="people" size={24} color={colors.primary} />
             ) : (
               <Ionicons name="people-outline" size={24} color="black" />
+            );
+          },
+          tabBarButton: CustomTabButton,
+        }}
+      />
+      <Tab.Screen
+        name="Groups"
+        component={GroupStack}
+        options={{
+          tabBarIcon: ({ focused }) => {
+            return focused ? (
+              <Ionicons
+                name="people-circle-sharp"
+                size={24}
+                color={colors.primary}
+              />
+            ) : (
+              <Ionicons name="people-circle-sharp" size={24} color="black" />
             );
           },
           tabBarButton: CustomTabButton,
@@ -98,27 +190,27 @@ const MyTabs = () => {
             return focused ? (
               <View>
                 <Image
-                  source={{ uri: userInfo.avatarImgUrl }}
+                  source={{ uri: userInfo?.avatar }}
                   style={{
                     width: 24,
                     height: 24,
                     borderRadius: 24 / 2,
                     borderWidth: 1,
                     borderColor: colors.primary,
-                    position:"relative"
+                    position: "relative",
                   }}
                 />
                 <View
                   style={{
                     borderColor: colors.primary,
                     borderWidth: 1,
-                    borderRadius:13/2,
+                    borderRadius: 13 / 2,
                     alignItems: "center",
                     justifyContent: "center",
-                    backgroundColor:colors.secondary,
-                    position:"absolute",
-                    bottom:0,
-                    right:-5
+                    backgroundColor: colors.secondary,
+                    position: "absolute",
+                    bottom: 0,
+                    right: -5,
                   }}
                 >
                   <Ionicons name="menu" size={13} color="black" />
@@ -127,27 +219,27 @@ const MyTabs = () => {
             ) : (
               <View>
                 <Image
-                  source={{ uri: userInfo.avatarImgUrl }}
+                  source={{ uri: userInfo?.avatar }}
                   style={{
                     width: 24,
                     height: 24,
                     borderRadius: 24 / 2,
                     borderWidth: 1,
                     borderColor: colors.black,
-                    position:"relative"
+                    position: "relative",
                   }}
                 />
                 <View
                   style={{
                     borderColor: colors.black,
                     borderWidth: 1,
-                    borderRadius:13/2,
+                    borderRadius: 13 / 2,
                     alignItems: "center",
                     justifyContent: "center",
-                    backgroundColor:colors.secondary,
-                    position:"absolute",
-                    bottom:0,
-                    right:-5
+                    backgroundColor: colors.secondary,
+                    position: "absolute",
+                    bottom: 0,
+                    right: -5,
                   }}
                 >
                   <Ionicons name="menu" size={13} color="black" />
@@ -194,6 +286,12 @@ const Routes = () => {
             component={PostScreen}
             options={{ presentation: "fullScreenModal", headerShown: false }}
           />
+          <Stack.Screen
+            name="CreateGroupScreen"
+            component={CreateGroupScreen}
+            options={{ presentation: "fullScreenModal", headerShown: false }}
+          />
+          <Stack.Screen name="InvitePeopleScreen" component={InvitePeople} />
         </Stack.Navigator>
       </NavigationContainer>
     );

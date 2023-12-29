@@ -3,7 +3,7 @@ import { StyleSheet, Platform, StatusBar } from 'react-native';
 
 export default StyleSheet.create({
     droidSafeArea: {
-        paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight+ 25) : 0
+        paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight) : 0
     },
 });
 

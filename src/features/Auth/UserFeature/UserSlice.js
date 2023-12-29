@@ -13,9 +13,10 @@ export const getUserInfo = createAsyncThunk(
     try {
       const req = await UserApi.getUserInfoApi(token);
       const res = await req.data;
+      
       return res;
     } catch (error) {
-      console.log("test")
+      
       console.log(error);
     }
   }
@@ -30,10 +31,7 @@ const userSlice = createSlice({
         state.loading=true
     })
     .addCase(getUserInfo.fulfilled,(state,actions)=>{
-      if(Platform.OS === 'android'){
-        console.log(actions.payload)
-        console.log("test")
-      }
+      
         state.loading=false;
         state.userInfo = actions.payload.data
     })
