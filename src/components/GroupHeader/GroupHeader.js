@@ -9,7 +9,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const GroupHeader = () => {
+const GroupHeader = ({screen}) => {
   const navigation = useNavigation();
   const handleCreateGroup = () => {
     navigation.navigate("CreateGroupScreen");
@@ -28,19 +28,19 @@ const GroupHeader = () => {
       </View>
       <View style={styles.navigationContainer}>
         <TouchableOpacity  onPress={()=> navigation.navigate("GroupHomeScreen")}>
-          <View style={[styles.tab, styles.forYouTab]}>
+          <View style={[styles.tab, styles.forYouTab,{backgroundColor:screen==="Foryou" ? colors.primary:colors.secondary}]}>
             <MaterialCommunityIcons
               name="newspaper-variant-outline"
               size={24}
-              color="black"
+              color={screen==="Foryou"?colors.white:colors.black}
             />
-            <StyledText title="For you" />
+            <StyledText title="For you" textStyle={{color:screen==="Foryou"?colors.white:colors.black}}/>
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={()=> navigation.navigate("GroupListScreen")}>
-          <View style={[styles.tab, styles.yourGroupTab]}>
-            <MaterialIcons name="groups" size={24} color="black" />
-            <StyledText title="Your group" />
+          <View style={[styles.tab, styles.yourGroupTab,{backgroundColor:screen==="Yourgroup"?colors.primary:colors.secondary}]}>
+            <MaterialIcons name="groups" size={24} color={screen==="Yourgroup"?colors.white:colors.black} />
+            <StyledText title="Your group" textStyle={{color:screen==="Yourgroup"?colors.white:colors.black}}/>
           </View>
         </TouchableOpacity>
       </View>

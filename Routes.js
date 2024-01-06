@@ -36,6 +36,14 @@ import InvitePeople from "./src/screen/InvitePeopleScreen/InvitePeople";
 import GroupDetailScreen from "./src/screen/GroupDetailScreen/GroupDetailScreen";
 import SearchScreen from "./src/screen/SearchScreen/SearchScreen";
 import SearchResultScreen from "./src/screen/SearchResultScreen/SearchResultScreen";
+import GroupPrivateScreen from "./src/screen/GroupPrivateScreen/GroupPrivateScreen";
+import FollowerScreen from "./src/screen/FollowerScreen/FollowerScreen";
+import FogotPasswordScreen from "./src/screen/FotgotPasswordScreen/FogotPasswordScreen";
+import ChangePasswordScreen from "./src/screen/ChangePassword/ChangePasswordScreen";
+import FeedDetailScreen from "./src/screen/FeedDetailScreen/FeedDetailScreen";
+import GroupMemberScreen from "./src/screen/GroupMemberScreen/GroupMemberScreen";
+import ChangeNewPasswordScreen from "./src/screen/ChangNewPasswordScreen/ChangeNewPasswordScreen";
+import MemberRequestScreen from "./src/screen/MembersRequest/MemberRequestScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -67,6 +75,7 @@ const HomeStack = () => {
       <Stack.Screen name="EditUserInfoScreen" component={EditUserInfoScreen} />
       <Stack.Screen name="SearchScreen" component={SearchScreen}/>
       <Stack.Screen name="SearchResultScreen" component={SearchResultScreen}/>
+      
     </Stack.Navigator>
   );
 };
@@ -81,10 +90,22 @@ const GroupStack = () => {
     >
       <Stack.Screen name="GroupHomeScreen" component={GroupHomeScreen} />
       <Stack.Screen name="GroupListScreen" component={GroupScreen} />
+      <Stack.Screen name="GroupMemberScreen" component={GroupMemberScreen} />
+      <Stack.Screen name="GroupMemberWaitingScreen" component={MemberRequestScreen} />
       <Stack.Screen name="GroupDetailScreen" component={GroupDetailScreen} />
+      
+      
     </Stack.Navigator>
   );
 };
+const FriendStack = ()=>{
+  return(
+    <Stack.Navigator initialRouteName="FollowingScreen" screenOptions={{headerShown:false}}>
+      <Stack.Screen name="FollowingScreen" component={FriendScreen}/>
+      <Stack.Screen name="FollowerScreen" component={FollowerScreen}/>
+    </Stack.Navigator>
+  )
+}
 // const GroupMainScreen = () => {
 //   return (
 //     <>
@@ -134,7 +155,7 @@ const MyTabs = () => {
       />
       <Tab.Screen
         name="Friends"
-        component={FriendScreen}
+        component={FriendStack}
         options={{
           tabBarIcon: ({ focused }) => {
             return focused ? (
@@ -286,12 +307,15 @@ const Routes = () => {
             component={PostScreen}
             options={{ presentation: "fullScreenModal", headerShown: false }}
           />
+          <Stack.Screen name="InvitePeopleScreen" component={InvitePeople}  options={{ presentation: "fullScreenModal", headerShown: false }}/>
           <Stack.Screen
             name="CreateGroupScreen"
             component={CreateGroupScreen}
             options={{ presentation: "fullScreenModal", headerShown: false }}
           />
-          <Stack.Screen name="InvitePeopleScreen" component={InvitePeople} />
+          
+          <Stack.Screen name="FeedDetail" component={FeedDetailScreen} options={{presentation:"fullScreenModal"}}/>
+          <Stack.Screen name="ChangeNewPassword" component={ChangeNewPasswordScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );
@@ -302,6 +326,9 @@ const Routes = () => {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUpSuccess" component={SignUpSuccessScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen name="FogotPassword" component={FogotPasswordScreen} />
+          <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+          
         </Stack.Navigator>
       </NavigationContainer>
     );

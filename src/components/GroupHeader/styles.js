@@ -26,12 +26,13 @@ export const styles = StyleSheet.create({
     alignItems: "flex-end",
     borderRadius:25,
     paddingVertical:10,
-    paddingHorizontal:8
+    paddingHorizontal:8,
+    gap:5
   },
   forYouTab: {
-    width: 90,
+    width: 100,
   },
   yourGroupTab: {
-    width: 120,
+    width: 130,
   },
 });

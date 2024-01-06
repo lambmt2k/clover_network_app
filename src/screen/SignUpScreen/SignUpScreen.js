@@ -89,22 +89,23 @@ const SignUpScreen = () => {
         gender: values.gender,
       };
       console.log(registerInfo)
-      AuthApi.registerApi(registerInfo)
-        .then((res) => {
-          console.log(res.data);
-          if (res.data.messageEN === "Existed user") {
-            setSignUpMessage("Sign up failed, account already exists!");
-            return;
-          }
-          if (res.data.messageEN === "Action success") {
-            setSignUpMessage("");
-            navigation.navigate("SignUpSuccess");
-            return;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      navigation.navigate("SignUpSuccess")
+      // AuthApi.registerApi(registerInfo)
+      //   .then((res) => {
+      //     console.log(res.data);
+      //     if (res.data.messageEN === "Existed user") {
+      //       setSignUpMessage("Sign up failed, account already exists!");
+      //       return;
+      //     }
+      //     if (res.data.messageEN === "Action success") {
+      //       setSignUpMessage("");
+      //       navigation.navigate("SignUpSuccess");
+      //       return;
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
     },
   });
   const handleRadioButtonChange = (value) => {
@@ -330,14 +331,14 @@ const SignUpScreen = () => {
                 </TouchableOpacity>
               </View>
             </View>
-            <View className="flex-row items-center mt-8">
+            {/* <View className="flex-row items-center mt-8">
               <View className="h-px flex-auto bg-slate-400" />
               <View>
                 <Text className="text-center w-10 text-lg">Or</Text>
               </View>
               <View className="h-px flex-auto bg-slate-400" />
             </View>
-            <GoogleLoginButton />
+            <GoogleLoginButton /> */}
           </View>
         </ScrollView>
       </SafeAreaView>

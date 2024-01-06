@@ -54,7 +54,7 @@ const HomeScreen = () => {
   const renderNoMore = () => {
     return endData ? (
       <View>
-        <StyledText title="You have read all post, Let's post something new" />
+        
       </View>
     ) : null;
   };
@@ -102,6 +102,7 @@ const HomeScreen = () => {
         });
     }
   };
+  
   useEffect(() => {
     dispatch(getUserInfo(user.tokenId));
   }, []);
@@ -109,6 +110,7 @@ const HomeScreen = () => {
     getFeeds();
   }, [page, fetching]);
 
+  
   const handleLoadMore = () => {
     if (!onEndReachedCalledDuringMomentum) {
       setLoadMore(true);
@@ -128,7 +130,6 @@ const HomeScreen = () => {
     // setEndData(false);
     // setFetching(true);
   };
-  console.log(feeds);
   if (loading) return <Loader />;
 
   return (
@@ -165,7 +166,7 @@ const HomeScreen = () => {
                   <View style={styles.userImageContainer}>
                     <Pressable
                       onPress={() => {
-                        navigation.navigate("UserScreen");
+                        navigation.navigate("UserScreen",{userId:userInfo.userId});
                       }}
                     >
                       <Image
@@ -176,7 +177,7 @@ const HomeScreen = () => {
                   </View>
                   <Pressable
                     onPress={() => {
-                      navigation.navigate("PostScreen");
+                      navigation.navigate("PostScreen",{screen:"User"});
                     }}
                     style={({ pressed }) => [
                       {

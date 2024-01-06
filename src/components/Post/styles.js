@@ -142,6 +142,11 @@ export const styles = StyleSheet.create({
   },
   timeAgo: {
     fontSize: 13,
+    color:colors.secondary,
     fontFamily:"BeVietnamPro_300Light"
   },
+  system:{
+    fontSize:13,
+    color:colors.secondary
+  }
 });

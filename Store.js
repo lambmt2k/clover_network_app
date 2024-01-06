@@ -5,6 +5,7 @@ import persistReducer from 'redux-persist/es/persistReducer';
 import persistStore from 'redux-persist/es/persistStore';
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import userReducer from "./src/features/Auth/UserFeature/UserSlice"
+import postReducer from "./src/features/Post/PostSlice"
 
 
 
@@ -18,11 +19,12 @@ const persistConfig = {
 const userPersistConfig = {
   key: 'login',
   storage: AsyncStorage,
-  whitelist: ['user']
+  whitelist: ['user','post']
 }
 const rootReducer = combineReducers({
   login:  persistReducer(userPersistConfig, loginReducer),
-  user: userReducer
+  user: userReducer,
+  post: postReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

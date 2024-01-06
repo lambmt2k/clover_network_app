@@ -22,7 +22,7 @@ const UploadModal = ({
   onRemoveImage
 }) => {
   return (
-    <View style={styles.centeredView}>
+    <View >
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <Pressable style={styles.outsideModal} onPress={onPressOut}>
           <View style={styles.centeredView}>

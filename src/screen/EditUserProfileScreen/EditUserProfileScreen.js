@@ -6,7 +6,7 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styles } from "./styles";
 import { colors } from "../../themes/style";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,6 +21,7 @@ import UploadModal from "../../components/UploadModal/UploadModal";
 import * as ImagePicker from "expo-image-picker";
 import UserApi from "../../apis/User";
 import { getUserInfo } from "../../features/Auth/UserFeature/UserSlice";
+import GroupApi from "../../apis/Group";
 
 const EditUserProfileScreen = () => {
   const { userInfo, loading } = useSelector((state) => state.user);
@@ -32,6 +33,9 @@ const EditUserProfileScreen = () => {
   };
   const dispatch = useDispatch();
   const [avatar, setAvatar] = useState(userInfo.avatar);
+  const [userProfile, setUserProfile] = useState();
+  const [background, setBackGround] = useState(userProfile?.userInfo.bannerUrl);
+  const [savedMode, setSavedMode] = useState("avatar");
   const uploadImage = async (mode) => {
     try {
       let res = {};
@@ -82,31 +86,71 @@ const EditUserProfileScreen = () => {
       throw error;
     }
   };
+  
 
   const sendToBackEnd = async (image) => {
     try {
-      const formData = new FormData();
+      if (savedMode === "avatar") {
+        const formData = new FormData();
 
-      formData.append("imageFile", {
-        uri: image.uri,
-        type: `image/${image.fileType}`,
-        name: image.fileName,
-      });
-
-      await UserApi.updateUserAvatar(user.tokenId, formData)
-        .then((responseData) => {
-          dispatch(getUserInfo(user.tokenId));
-          setAvatar(image.uri);
-          console.log(responseData);
-        })
-        .catch((err) => {
-          console.log("fail");
-          console.log(err);
+        formData.append("imageFile", {
+          uri: image.uri,
+          type: `image/${image.fileType}`,
+          name: image.fileName,
         });
+        await UserApi.updateUserAvatar(user.tokenId, formData)
+          .then((responseData) => {
+            dispatch(getUserInfo(user.tokenId));
+            setAvatar(image.uri);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+      if (savedMode === "background") {
+        const formData = new FormData();
+
+        formData.append("bannerFile", {
+          uri: image.uri,
+          type: `image/${image.fileType}`,
+          name: image.fileName,
+        });
+        formData.append("groupId", userInfo.userWallId);
+        
+        await GroupApi.changeGroupBanner(user.tokenId, formData)
+          .then((res) => {
+            console.log(res.data.data);
+            dispatch(getUserInfo(user.tokenId));
+            setBackGround(res.data.data.group.bannerUrl);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     } catch (error) {
       console.log(error);
     }
   };
+  const getUserProfile = () => {
+    UserApi.getUserProfile(user.tokenId, userInfo.userId)
+      .then((res) => {
+        setUserProfile(res.data.data);
+        setBackGround(res.data.data.userInfo.bannerUrl)
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const onChangeAvatarPress = () => {
+    setSavedMode("avatar"), setModalVisible(true);
+  };
+  const onChangeBackgroundPress = () => {
+    setSavedMode("background"), setModalVisible(true);
+  };
+
+  useEffect(() => {
+    getUserProfile();
+  }, []);
   return (
     <SafeAreaView>
       <View>
@@ -141,7 +185,7 @@ const EditUserProfileScreen = () => {
             <View>
               <StyledText title="Avatar" textStyle={styles.textStyle2} />
             </View>
-            <Pressable onPress={() => setModalVisible(!modalVisible)}>
+            <Pressable onPress={onChangeAvatarPress}>
               <View>
                 <StyledText title="Edit" textStyle={styles.textEdit} />
               </View>
@@ -159,14 +203,18 @@ const EditUserProfileScreen = () => {
             <View>
               <StyledText title="Background" textStyle={styles.textStyle2} />
             </View>
-            <View>
-              <StyledText title="Edit" textStyle={styles.textEdit} />
-            </View>
+            <Pressable onPress={onChangeBackgroundPress}>
+              <View>
+                <StyledText title="Edit" textStyle={styles.textEdit} />
+              </View>
+            </Pressable>
           </View>
           <View style={{ alignItems: "center" }}>
             <View style={styles.bgContainer}>
               <Image
-                source={{ uri: "https://picsum.photos/1920/1080" }}
+                source={{ uri: background
+                        ? background
+                        : "https://picsum.photos/1920/1080" }}
                 style={styles.userBg}
               />
             </View>

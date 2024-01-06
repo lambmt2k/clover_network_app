@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, FlatList, Image } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, Image, Pressable } from "react-native";
 import React, { useState } from "react";
 import SearchHeader from "../../components/SearchHeader/SearchHeader";
 import StyledText from "../../components/StyledText/StyledText";
@@ -10,13 +10,16 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
+import GroupPrivate from "../../components/GroupPrivate/GroupPrivate";
+import PostSeacch from "../../components/PostSearch/PostSearch";
 
 const SearchResultScreen = ({ route }) => {
   const { result, searchQuery } = route.params;
   const [show, setShow] = useState(1);
   const navigation = useNavigation();
+  const [visible, setVisble] = useState(false);
+  const [currentGroup, setCurrentGroup] = useState();
 
-  //   const renderFeedItem = ({ item }) => (
   //     <View>
   //       <View
   //         style={[
@@ -195,28 +198,34 @@ const SearchResultScreen = ({ route }) => {
   //       </View>
   //     </View>
   //   );
-  const renderFeedItem = ({ item }) => (
-    <View>
-      <Text>render feed</Text>
-    </View>
-  );
+  const renderFeedItem = ({ item }) => <Post data={item} screen="Group" />;
+  const onPrivatePress = (item) => {
+    setVisble(true);
+    setCurrentGroup(item);
+  };
+  const handlePressContainer = (item) => {
+    if (
+      item?.currentUserRole === null &&
+      item.group.groupPrivacy === "PRIVATE"
+    ) {
+      onPrivatePress(item.group);
+    } else {
+      navigation.navigate("Groups", {
+        screen: "GroupDetailScreen",
+        initial: false,
+        params: { groupId: item.group.groupId },
+      });
+    }
+  };
   const renderGroupItem = ({ item }) => {
     return (
-      <TouchableOpacity
-        onPress={() =>
-                  navigation.navigate("Groups", {
-                    screen: "GroupDetailScreen",
-                    initial: false,
-                    params: { groupId: item.group.groupId },
-                  })
-                }
-      >
+      <Pressable>
         <View style={styles.itemContainer}>
           <View>
-            {item.group?.avatarUrl ? (
+            {item.group?.bannerUrl ? (
               <Image
                 style={{ width: 80, height: 80 }}
-                source={{ uri: item?.avatarUrl }}
+                source={{ uri: item?.group.bannerUrl }}
               />
             ) : (
               <Image
@@ -226,7 +235,10 @@ const SearchResultScreen = ({ route }) => {
             )}
           </View>
           <View style={{ flex: 1, paddingRight: 10 }}>
-            <StyledText title={item.group?.groupName} textStyle={styles.groupName} />
+            <StyledText
+              title={item.group?.groupName}
+              textStyle={styles.groupName}
+            />
             <View style={{ marginVertical: 5 }}>
               {item.group?.groupPrivacy === "PUBLIC" ? (
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -281,33 +293,52 @@ const SearchResultScreen = ({ route }) => {
             <View>
               <StyledText title={item.group?.groupDesc} />
             </View>
-            {item.currentUserRole ?(<TouchableOpacity
-              style={styles.visitBtn}
-              onPress={() =>
+            {item.currentUserRole ? (
+              item.currentUserRole.status === "WAITING_FOR_APPROVE" ? (
+                <TouchableOpacity style={styles.waitingBnt} disabled>
+                  <StyledText
+                    title="Waiting For Approve"
+                    textStyle={styles.visitText}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.visitBtn}
+                  onPress={() =>
+                    navigation.navigate("Groups", {
+                      screen: "GroupDetailScreen",
+                      initial: false,
+                      params: { groupId: item.group.groupId },
+                    })
+                  }
+                >
+                  <StyledText title="Visit" textStyle={styles.visitText} />
+                </TouchableOpacity>
+              )
+            ) : item.group?.groupPrivacy === "PRIVATE" ? (
+              <TouchableOpacity
+                style={styles.visitBtn}
+                onPress={() => onPrivatePress(item.group)}
+              >
+                <StyledText title="Join Group" textStyle={styles.visitText} />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.visitBtn}
+                onPress={() =>
                   navigation.navigate("Groups", {
                     screen: "GroupDetailScreen",
                     initial: false,
                     params: { groupId: item.group.groupId },
                   })
                 }
-            >
-              <StyledText title="Visit" textStyle={styles.visitText} />
-            </TouchableOpacity>):(<TouchableOpacity
-              style={styles.visitBtn}
-              onPress={() =>
-                  navigation.navigate("Groups", {
-                    screen: "GroupDetailScreen",
-                    initial: false,
-                    params: { groupId: item.group.groupId },
-                  })
-                }
-            >
-              <StyledText title="Join Group" textStyle={styles.visitText} />
-            </TouchableOpacity>)}
-            
+              >
+                <StyledText title="Join Group" textStyle={styles.visitText} />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     );
   };
   const renderUserItem = ({ item }) => {
@@ -341,8 +372,8 @@ const SearchResultScreen = ({ route }) => {
           <View>
             <StyledText title={item?.groupDesc} />
           </View>
-          <TouchableOpacity style={styles.visitBtn}>
-            <StyledText title="Connect" textStyle={styles.visitText} />
+          <TouchableOpacity style={styles.visitBtn} onPress={()=>navigation.navigate("UserScreen",{userId:item.userId})}>
+            <StyledText title="Visit" textStyle={styles.visitText} />
           </TouchableOpacity>
         </View>
       </View>
@@ -414,13 +445,19 @@ const SearchResultScreen = ({ route }) => {
           </View>
         </TouchableOpacity>
       </View>
-
+      {
+        <GroupPrivate
+          visible={visible}
+          onPressOut={() => setVisble(false)}
+          data={currentGroup}
+        />
+      }
       <View style={[styles.resultContainer]}>
         {show === 1 && (
           <View style={[styles.flatlistCon]}>
             <FlatList
               data={result.feeds}
-              keyExtractor={(item) => item.postId}
+              keyExtractor={(item) => item.feedItem.postId}
               renderItem={renderFeedItem}
               ListEmptyComponent={renderEmpty}
               contentContainerStyle={[

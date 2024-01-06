@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 
 const GroupCard = ({ data }) => {
   const navigation = useNavigation();
+  
   return (
     <TouchableOpacity
       onPress={() =>
@@ -26,10 +27,10 @@ const GroupCard = ({ data }) => {
         }}
       >
         <View>
-          {data?.bannerImgUrl ? (
+          {data?.bannerUrl ? (
             <Image
               style={{ width: 40, height: 40 }}
-              source={{ uri: data?.bannerImgUrl }}
+              source={{ uri: data?.bannerUrl }}
             />
           ) : (
             <Image

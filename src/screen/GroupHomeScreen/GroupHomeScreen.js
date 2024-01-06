@@ -71,6 +71,7 @@ const GroupHomeScreen = () => {
         });
     }
   };
+  
   useEffect(() => {
     getFeeds();
   }, [page,fetching]);
@@ -96,7 +97,7 @@ const GroupHomeScreen = () => {
 
   return (
     <SafeAreaView style={{flex:1,marginBottom:Platform.OS === "ios" ? -35 : 0}}  >
-      <GroupHeader />
+      <GroupHeader screen="Foryou"/>
       <View style={{ flex: 1  }}>
         <FlatList
           data={feeds}

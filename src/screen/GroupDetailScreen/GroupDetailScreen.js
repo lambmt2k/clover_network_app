@@ -31,10 +31,11 @@ import PostApi from "../../apis/Post";
 import GroupApi from "../../apis/Group";
 import { FontAwesome } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import GroupPrivate from "../../components/GroupPrivate/GroupPrivate";
 
 const GroupDetailScreen = ({ route }) => {
   const { groupId } = route.params;
-  console.log(groupId)
+
   const { userInfo, loading } = useSelector((state) => state.user);
   const { user } = useSelector((state) => state.login);
   const [modalVisible, setModalVisible] = useState(false);
@@ -50,6 +51,8 @@ const GroupDetailScreen = ({ route }) => {
     onEndReachedCalledDuringMomentum,
     setOnEndReachedCalledDuringMomentum,
   ] = useState(true);
+  const [firstLoad, setFirstLoad] = useState(true);
+  const [background, setBackGround] = useState();
   const renderLoader = () => {
     return loadMore ? (
       <View>
@@ -58,11 +61,7 @@ const GroupDetailScreen = ({ route }) => {
     ) : null;
   };
   const renderNoMore = () => {
-    return endData ? (
-      <View>
-        <StyledText title="You have read all post, Let's post something new" />
-      </View>
-    ) : null;
+    return endData ? <View></View> : null;
   };
   const getFeeds = () => {
     if (fetching) {
@@ -81,8 +80,25 @@ const GroupDetailScreen = ({ route }) => {
             setLoadMore(false);
             setEndData(true);
           } else {
-            setFeeds([...feeds, ...res.data.data]);
-            setLoadMore(false);
+            if (firstLoad) {
+              setFeeds(res.data.data);
+              setFirstLoad(false);
+            } else {
+              const newFeedsData = [...feeds, ...res.data.data];
+              const uniqueFeedIds = [];
+              //const uniqueFeedsId = [...new Set(newFeedsData.map((it)=>it.feedItem?.postId))]
+              const newFeeds = newFeedsData.filter((it) => {
+                const isDuplicate = uniqueFeedIds.includes(it.feedItem.postId);
+                if (!isDuplicate) {
+                  uniqueFeedIds.push(it.feedItem.postId);
+                  return true;
+                }
+                return false;
+              });
+
+              setFeeds(newFeeds);
+              setLoadMore(false);
+            }
           }
         })
         .catch((err) => {
@@ -95,16 +111,18 @@ const GroupDetailScreen = ({ route }) => {
       .then((res) => {
         setGroupInfo(res.data.data);
         setUserStaus(res.data.data.currentUserRole);
+        setBackGround(res.data.data.group.bannerUrl);
       })
       .catch((err) => console.log(err));
   };
+
   useEffect(() => {
     dispatch(getUserInfo(user.tokenId));
     getGroupInfo();
   }, []);
   useEffect(() => {
     getFeeds();
-  }, [page]);
+  }, [page, fetching]);
 
   const handleLoadMore = () => {
     if (!onEndReachedCalledDuringMomentum) {
@@ -116,9 +134,11 @@ const GroupDetailScreen = ({ route }) => {
   };
   const navigation = useNavigation();
   const handleRefesh = () => {
+    if (endData) {
+      setPage(0);
+      setEndData(false);
+    }
     setFetching(true);
-    setPage(0);
-    setEndData(false);
   };
 
   const dispatch = useDispatch();
@@ -127,25 +147,17 @@ const GroupDetailScreen = ({ route }) => {
     setModalVisible(false);
   };
   const [avatar, setAvatar] = useState(userInfo?.avatar);
-  const uploadImage = async (mode) => {
+  const handleOpenGallery = async () => {
     try {
       let res = {};
-      if (mode === "gallery") {
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-        res = await ImagePicker.launchImageLibraryAsync({
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 0.1,
-        });
-      } else {
-        await ImagePicker.requestCameraPermissionsAsync();
-        res = await ImagePicker.launchCameraAsync({
-          cameraType: ImagePicker.CameraType.front,
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 0.2,
-        });
-      }
+
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+      res = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.1,
+      });
+
       if (!res.canceled) {
         const fileType = res.assets[0].uri.substring(
           res.assets[0].uri.lastIndexOf(".") + 1
@@ -171,7 +183,6 @@ const GroupDetailScreen = ({ route }) => {
   };
   const saveImage = async (image) => {
     try {
-      setModalVisible(false);
       sendToBackEnd(image);
     } catch (error) {
       throw error;
@@ -182,16 +193,16 @@ const GroupDetailScreen = ({ route }) => {
     try {
       const formData = new FormData();
 
-      formData.append("imageFile", {
+      formData.append("bannerFile", {
         uri: image.uri,
         type: `image/${image.fileType}`,
         name: image.fileName,
       });
+      formData.append("groupId", groupId);
 
-      await UserApi.updateUserAvatar(user.tokenId, formData)
-        .then((responseData) => {
-          dispatch(getUserInfo(user.tokenId));
-          setAvatar(image.uri);
+      await GroupApi.changeGroupBanner(user.tokenId, formData)
+        .then((res) => {
+          setBackGround(res.data.data.group.bannerUrl);
         })
         .catch((err) => {
           console.log(err);
@@ -202,31 +213,45 @@ const GroupDetailScreen = ({ route }) => {
   };
   const handleRenderEmpty = () => {
     return (
-      <View>
-        <StyledText title="Nothing to render" />
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <MaterialIcons name="article" size={60} color={colors.primary} />
+        <StyledText title="This group doesn't have any post yet" />
       </View>
     );
   };
-  const handleJoinGroup = ()=>{
-    console.log("Join")
-    GroupApi.joinGroup(user.tokenId,groupId).then(res=>{
-      console.log(res.data)
-      getGroupInfo()
-    }).catch(err=>{
-      console.log(err)
-    })
-  }
+  const handleJoinGroup = () => {
+    console.log("Join");
+    GroupApi.joinGroup(user.tokenId, groupId)
+      .then((res) => {
+        getGroupInfo();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const handleLeaveGroup = () => {
     console.log("leave");
+    GroupApi.leaveGroup(user.tokenId, groupId)
+      .then((res) => {
+        setModalVisible(false);
+        getGroupInfo();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
-  //backgroundColor: userStatus ? colors.white : colors.primary
+  if (
+    groupInfo.group?.groupPrivacy === "PRIVATE" &&
+    !groupInfo.currentUserRole
+  ) {
+    return <GroupPrivate />;
+  }
   return (
     <View
       style={{
         backgroundColor: userStatus ? colors.white : colors.primary,
         flex: 1,
-        alignItems: "flex-start",
       }}
     >
       <View
@@ -255,10 +280,10 @@ const GroupDetailScreen = ({ route }) => {
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
             >
-              {groupInfo.group?.bannerUrl ? (
+              {background ? (
                 <Image
                   style={{ width: 40, height: 40 }}
-                  source={{ uri: groupInfo.group?.bannerUrl }}
+                  source={{ uri: background }}
                 />
               ) : (
                 <Image
@@ -280,7 +305,6 @@ const GroupDetailScreen = ({ route }) => {
             </View>
           </View>
           <View>
-            
             {userStatus && userStatus?.roleId === "OWNER" && (
               <Entypo
                 name="shield"
@@ -291,25 +315,15 @@ const GroupDetailScreen = ({ route }) => {
           </View>
         </View>
       </View>
-      {
-        <UploadModal
-          modalVisible={modalVisible}
-          onPressOut={onPressOut}
-          onPressCamera={() => uploadImage()}
-          onPressGallery={() => uploadImage("gallery")}
-        />
-      }
+
       <View style={styles.flatlistContainer}>
         <FlatList
           ListHeaderComponent={
             <View>
               <View clasName="groupUserImage">
                 <View clasName="bg-image" style={styles.bgContainer}>
-                  {groupInfo.group?.bannerUrl ? (
-                    <Image
-                      source={{ uri: groupInfo.group?.bannerUrl }}
-                      style={styles.userBg}
-                    />
+                  {background ? (
+                    <Image source={{ uri: background }} style={styles.userBg} />
                   ) : (
                     <Image
                       source={require("../../assets/img/backGroundDefault.png")}
@@ -317,7 +331,7 @@ const GroupDetailScreen = ({ route }) => {
                     />
                   )}
                   {userStatus && userStatus.roleId === "OWNER" && (
-                    <Pressable>
+                    <Pressable onPress={handleOpenGallery}>
                       <View style={styles.cameraBg}>
                         <Entypo name="camera" size={24} color="black" />
                       </View>
@@ -343,23 +357,29 @@ const GroupDetailScreen = ({ route }) => {
                       <StyledText title="Public group" />
                     </View>
                     <Entypo name="dot-single" size={12} color="black" />
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 3,
-                      }}
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("GroupMemberScreen", { groupInfo })
+                      }
                     >
-                      <StyledText
-                        title={groupInfo.group?.totalMember}
-                        textStyle={{
-                          color: colors.black,
-                          fontFamily: "BeVietnamPro_600SemiBold",
-                          fontSize: 15,
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 3,
                         }}
-                      />
-                      <StyledText title="members" />
-                    </View>
+                      >
+                        <StyledText
+                          title={groupInfo.group?.totalMember}
+                          textStyle={{
+                            color: colors.black,
+                            fontFamily: "BeVietnamPro_600SemiBold",
+                            fontSize: 15,
+                          }}
+                        />
+                        <StyledText title="members" />
+                      </View>
+                    </TouchableOpacity>
                   </View>
                 ) : (
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -404,25 +424,58 @@ const GroupDetailScreen = ({ route }) => {
                     }}
                   >
                     {userStatus?.roleId === "OWNER" ? (
-                      <Pressable
-                        style={({ pressed }) => [
-                          {
-                            backgroundColor: pressed
-                              ? "rgba(46, 160, 67,0.8)"
-                              : colors.primary,
-                            paddingVertical: 10,
-                            borderRadius: 16,
-                          },
-                          styles.manageGroup,
-                        ]}
-                        onPress={() => console.log("admin")}
-                      >
-                        <Entypo name="shield" size={20} color={colors.white} />
-                        <StyledText
-                          title="Mange"
-                          textStyle={styles.manageGroupText}
-                        />
-                      </Pressable>
+                      groupInfo?.group.groupPrivacy === "PUBLIC" ? (
+                        <Pressable
+                          style={({ pressed }) => [
+                            {
+                              backgroundColor: pressed
+                                ? "rgba(46, 160, 67,0.8)"
+                                : colors.primary,
+                              paddingVertical: 10,
+                              borderRadius: 16,
+                            },
+                            styles.manageGroup,
+                          ]}
+                        >
+                          <Entypo
+                            name="shield"
+                            size={20}
+                            color={colors.white}
+                          />
+                          <StyledText
+                            title="Mange"
+                            textStyle={styles.manageGroupText}
+                          />
+                        </Pressable>
+                      ) : (
+                        <Pressable
+                          style={({ pressed }) => [
+                            {
+                              backgroundColor: pressed
+                                ? "rgba(46, 160, 67,0.8)"
+                                : colors.primary,
+                              paddingVertical: 10,
+                              borderRadius: 16,
+                            },
+                            styles.manageGroup,
+                          ]}
+                          onPress={() =>
+                            navigation.navigate("GroupMemberWaitingScreen", {
+                              groupId,
+                            })
+                          }
+                        >
+                          <Entypo
+                            name="shield"
+                            size={20}
+                            color={colors.white}
+                          />
+                          <StyledText
+                            title="Mange"
+                            textStyle={styles.manageGroupText}
+                          />
+                        </Pressable>
+                      )
                     ) : (
                       <Pressable
                         style={({ pressed }) => [
@@ -560,7 +613,10 @@ const GroupDetailScreen = ({ route }) => {
                   </View>
                   <Pressable
                     onPress={() => {
-                      navigation.navigate("PostScreen");
+                      navigation.navigate("PostScreen", {
+                        screen: "Group",
+                        checkId: groupId,
+                      });
                     }}
                     style={({ pressed }) => [
                       {

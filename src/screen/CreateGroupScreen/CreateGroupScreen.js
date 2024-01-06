@@ -13,7 +13,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./styles";
 import { colors } from "../../themes/style";
 import StyledText from "../../components/StyledText/StyledText";
-import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import * as yup from "yup";
 import { useFormik } from "formik";
@@ -23,9 +22,10 @@ import { FontAwesome } from "@expo/vector-icons";
 import GroupApi from "../../apis/Group";
 import { useSelector } from "react-redux";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 
 const CreateGroupScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation()
   const [visible, setVisible] = useState(false);
   const [privacy, setPrivacy] = useState();
   const { user } = useSelector((state) => state.login);
@@ -46,6 +46,7 @@ const CreateGroupScreen = () => {
 
     onSubmit: (values) => {
       console.log(values);
+      //navigation.navigate('InvitePeopleScreen',{groupId:"test"})
       GroupApi.createGroup(user.tokenId, values)
         .then((res) => {
           console.log(res.data);

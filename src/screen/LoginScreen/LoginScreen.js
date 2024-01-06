@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import React, { useLayoutEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
-import style, { COLORS } from "../../themes/style";
+import style, { COLORS, colors } from "../../themes/style";
 import Input from "../../components/Input/Input";
 import Button from "../../components/Button/Button";
 import GoogleLoginButton from "../../components/GoogleLoginButton/GoogleLoginButton";
@@ -20,15 +20,18 @@ import * as yup from "yup";
 import { Formik, useFormik } from "formik";
 import { styles } from "./styles";
 import { useDispatch, useSelector } from "react-redux";
-import { loginError, loginUser } from "../../features/Auth/LoginFeatures/LoginSlice";
+import {
+  loginError,
+  loginUser,
+} from "../../features/Auth/LoginFeatures/LoginSlice";
 import Loader from "../../components/Loader/Loader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  
-  const {loading,error,isLogin} = useSelector((state)=>state.login)
+
+  const { loading, error, isLogin } = useSelector((state) => state.login);
   const loginValidationSchema = yup.object().shape({
     email: yup
       .string()
@@ -39,25 +42,22 @@ const LoginScreen = () => {
       .min(4, ({ min }) => `Password must be at least ${min} characters`)
       .required("Password is required"),
   });
-  
+
   const formik = useFormik({
-    validateOnMount:true,
-    validationSchema:loginValidationSchema,
+    validateOnMount: true,
+    validationSchema: loginValidationSchema,
     initialValues: {
       email: "",
       password: "",
     },
     onSubmit: (values) => {
-      
-      dispatch(loginUser(values))
-      
+      dispatch(loginUser(values));
     },
   });
- 
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView style={style.droidSafeArea}>
-     
         <View className="flex flex-row	justify-center items-center mt-16">
           <View className=" rounded-full border-2 p-2 border-[#2EA043] mr-2">
             <Image
@@ -100,10 +100,19 @@ const LoginScreen = () => {
             <Text style={styles.errorText}>{formik.errors.password}</Text>
           )}
           <Button title="Sign In" onPress={formik.handleSubmit} />
-          {loading && (<Loader/>)}
-          {error && (<Text style={styles.loginErrorText}>{error}</Text>) }
-          
-          <View className="flex flex-row mt-5">
+          {loading && <Loader />}
+          {error && <Text style={styles.loginErrorText}>{error}</Text>}
+          <TouchableOpacity onPress={()=>navigation.navigate("FogotPassword")}>
+            <View className="flex flex-row mt-5 justify-center">
+              <Text
+                className="text-sm underline italic"
+                style={{ color: colors.primary }}
+              >
+                Fogot your password?{" "}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <View className="flex flex-row mt-5 ">
             <Text className="text-lg">Don't have account? </Text>
             <View>
               <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
@@ -111,8 +120,8 @@ const LoginScreen = () => {
               </TouchableOpacity>
             </View>
           </View>
-          <Separator text="Or" />
-          <GoogleLoginButton />
+          {/* <Separator text="Or" />
+          <GoogleLoginButton /> */}
         </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>

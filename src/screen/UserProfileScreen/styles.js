@@ -73,13 +73,20 @@ export const styles = StyleSheet.create({
     friendsAmount:{
         fontFamily:"BeVietnamPro_600SemiBold",
         fontSize:16,
-        marginRight:2
+        marginRight:2,
+        
     }
     ,
     friendContainer:{
         flexDirection:'row',
-        alignItems:"baseline",
-        marginVertical:10
+        alignItems:"center",
+        marginVertical:10,
+        gap:4
+    },
+    followContainer:{
+        flexDirection:"row",
+        alignItems:"center",
+        gap:5
     },
     newPost:{
         flexDirection:"row",
@@ -146,4 +153,10 @@ export const styles = StyleSheet.create({
         fontFamily:"BeVietnamPro_300Light_Italic"
         
       },
+      folowBtn:{
+        backgroundColor:colors.primary,
+        paddingVertical:10,
+        alignItems:"center",
+        borderRadius:8
+      }
 })

@@ -4,7 +4,7 @@ import { styles } from './styles';
 import {CalendarIcon} from "react-native-heroicons/solid";
 import { colors } from '../../themes/style';
 
-const Input = ({ label, name, placeholder, isPassword, isDate, editable,  onChangeText,onBlur,onPressIn,value,keyboardType }) => {
+const Input = ({ label, name, placeholder, isPassword, isDate, editable,  onChangeText,onBlur,onPressIn,value,keyboardType,maxLength }) => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     const onEyePress = () => {
@@ -15,7 +15,7 @@ const Input = ({ label, name, placeholder, isPassword, isDate, editable,  onChan
         <View style={styles.container}>
             <Text style={styles.label}>{label}</Text>
             <View style={styles.inputContainer}>
-                <TextInput secureTextEntry={isPassword && !isPasswordVisible} placeholder={placeholder} name={name}  onChangeText={onChangeText}  onBlur={onBlur} value={value} style={styles.input} editable={editable} onPressIn={onPressIn} keyboardType={keyboardType}/>
+                <TextInput secureTextEntry={isPassword && !isPasswordVisible} placeholder={placeholder} name={name}  onChangeText={onChangeText}  onBlur={onBlur} value={value} style={styles.input} editable={editable} onPressIn={onPressIn} keyboardType={keyboardType} maxLength={maxLength}/>
 
                 {isPassword ? (
                     <Pressable onPress={onEyePress}>

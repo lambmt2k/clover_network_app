@@ -28,6 +28,15 @@ const PostApi = {
   },
   createPost(token,data){
     return callApi(`feed/post`,"POST",data,token)
+  },
+  getPostDetail(token,postId){
+    return callApi(`feed/detail/${postId}`,"GET",null,token)
+  },
+  getListPostComment(token,feedId,page){
+    return callApi(`feed/get-list-comment?page=${page}&size=5&feedId=${feedId}`,"GET",null,token)
+  },
+  commentPost(token,data){
+    return callApi(`feed/comment`,"POST",data,token)
   }
 };
 

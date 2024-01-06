@@ -17,7 +17,7 @@ const MenuScreen = () => {
         <StyledText title="Menu" textStyle={styles.menuText} />
         <Pressable
           onPress={() => {
-            navigation.navigate("UserScreen");
+            navigation.navigate("UserScreen",{userId:userInfo.userId});
           }}
           style={({ pressed }) => [
             {
@@ -44,6 +44,7 @@ const MenuScreen = () => {
       </View>
       <View style={{ flex: 1, justifyContent: "flex-end", marginBottom: 10 }}>
         <Pressable
+        onPress={() => navigation.navigate("ChangeNewPassword") }
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? colors.secondary : colors.lightGrey,

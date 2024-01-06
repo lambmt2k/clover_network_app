@@ -42,6 +42,14 @@ export const styles = StyleSheet.create({
     marginTop: 5,
     borderRadius: 10,
   },
+  waitingBnt:{
+    backgroundColor: colors.secondary,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 10,
+    marginTop: 5,
+    borderRadius: 10,
+  },
   visitText: {
     color: colors.white,
     fontSize: 16,

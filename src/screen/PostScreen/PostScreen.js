@@ -27,7 +27,9 @@ import PostApi from "../../apis/Post";
 import { BASE_URL_V2 } from "../../settings/apiConfig";
 import { useRef } from "react";
 
-const PostScreen = () => {
+const PostScreen = ({route}) => {
+  const {screen,checkId,userWallId} = route.params
+  
   const navigation = useNavigation();
   const { userInfo } = useSelector((state) => state.user);
   const { user } = useSelector((state) => state.login);
@@ -37,6 +39,7 @@ const PostScreen = () => {
   const [privacy, setPrivacy] = useState("PRIVATE");
   const [changeDisplayModal, setChangeDisplayModal] = useState(true);
   const [imageData, setImageData] = useState([]);
+  const [errorModal, setErrorModal] = useState(false);
   // const selectFromGalery = () => {
   //   ImagePicker.openPicker({
   //     width: 300,
@@ -77,10 +80,10 @@ const PostScreen = () => {
 
         const savedImage = {
           uri: res.assets[0].uri,
-          type:`images/${fileType}`,
-          name:fileName,
+          type: `images/${fileType}`,
+          name: fileName,
         };
-        
+
         setVisible(false);
         setImageData([...imageData, savedImage]);
         setListImage([...listImage, savedImage.uri]);
@@ -95,7 +98,7 @@ const PostScreen = () => {
       let res = {};
       await ImagePicker.requestMediaLibraryPermissionsAsync();
       res = await ImagePicker.launchImageLibraryAsync({
-        aspect:[1,1],
+        aspect: [1, 1],
         quality: 0.1,
         base64: true,
         allowsMultipleSelection: true,
@@ -130,8 +133,8 @@ const PostScreen = () => {
           const fileName = item.uri.replace(/^.*[\\\/]/, "");
           const savedImage = {
             uri: item.uri,
-            type:`images/${fileType}`,
-            name:fileName,
+            type: `images/${fileType}`,
+            name: fileName,
           };
           return savedImage;
         });
@@ -174,15 +177,43 @@ const PostScreen = () => {
     }
   };
   const handlePost = () => {
-    const feedItem = {
-      authorId: userInfo.userId,
-      content: content,
-      htmlContent: content,
-      postToUserWall: true,
-      privacyGroupId: userInfo.userWallId,
-      privacyType: "PUBLIC",
-      toUserId: null,
-    };
+    let feedItem={}
+    if(screen === "User"){
+      feedItem = {
+        authorId: userInfo.userId,
+        content: content,
+        htmlContent: content,
+        postToUserWall: true,
+        privacyGroupId: userInfo.userWallId,
+        privacyType: "PUBLIC",
+        toUserId: null,
+      };
+    }
+    
+  
+    if(screen === "Group"){
+      feedItem = {
+        authorId: userInfo.userId,
+        content: content,
+        htmlContent: content,
+        postToUserWall: false,
+        privacyGroupId: checkId,
+        privacyType: "PUBLIC",
+        toUserId: null,
+      };
+    }
+    if(screen === "Friend"){
+      feedItem = {
+        authorId: userInfo.userId,
+        content: content,
+        htmlContent: content,
+        postToUserWall: true,
+        privacyGroupId: userWallId,
+        privacyType: "PUBLIC",
+        toUserId: checkId,
+      };
+    }
+    
 
     // const newItem = JSON.stringify(feedItem);
     // const blobData = new Blob([newItem], { type: "application/json" });
@@ -193,28 +224,29 @@ const PostScreen = () => {
       string: JSON.stringify(feedItem), //This is how it works :)
       type: "application/json",
     });
-    
-    if(imageData?.length > 0) {
-      imageData.forEach( (image) => {
-        formData.append('images', {
+
+    if (imageData?.length > 0) {
+      imageData.forEach((image) => {
+        formData.append("images", {
           name: image.name,
           type: image.type,
           uri: image.uri,
-        })
-      })
+        });
+      });
     }
     //formData.append("images",imageData);
-    
+
     PostApi.createPost(user.tokenId, formData)
       .then((res) => {
         console.log(res.data);
+        navigation.goBack();
       })
       .catch((err) => {
         console.log(err);
+        setErrorModal(true);
       });
   };
-  
-  
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <View style={styles.appBarContainer}>
@@ -424,6 +456,20 @@ const PostScreen = () => {
                   </TouchableOpacity>
                 </View>
               )}
+            </Pressable>
+          </Modal>
+        </View>
+      }
+      {
+        <View style={styles.centeredView}>
+          <Modal animationType="slide" transparent={true} visible={errorModal}>
+            <Pressable style={styles.outside} onPress={() => setErrorModal(false)}>
+              <View style={styles.centeredView}>
+                <View style={styles.modalViewError}>
+                  <StyledText title="Your images too large! Please chose again!" textStyle={styles.modalErrorText} />
+                  <Entypo name="emoji-sad" size={24} color={colors.primary} />
+                </View>
+              </View>
             </Pressable>
           </Modal>
         </View>

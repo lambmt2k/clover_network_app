@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const InvitePeople = ({route}) => {
   const {groupId} = route.params
+  //console.log(groupId)
   const navigation = useNavigation();
   return (
     <SafeAreaView>

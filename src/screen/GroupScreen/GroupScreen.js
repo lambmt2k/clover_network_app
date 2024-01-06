@@ -35,7 +35,7 @@ const GroupScreen = () => {
     <SafeAreaView
       style={{ flex: 1, marginBottom: Platform.OS === "ios" ? -35 : 0 }}
     >
-      <GroupHeader />
+      <GroupHeader screen="Yourgroup"/>
       <View style={{ marginHorizontal: 10, marginVertical: 5 }}>
         <StyledText
           title="Your Group"
