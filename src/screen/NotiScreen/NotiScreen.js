@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Text, View, Platform, Button } from "react-native";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+import StyledText from "../../components/StyledText/StyledText";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -49,7 +50,7 @@ export default function NotiScreen() {
         
       }}
     >
-      <Text>Your expo push token: {expoPushToken}</Text>
+      {/* <Text>Your expo push token: {expoPushToken}</Text>
       <View style={{ alignItems: "center", justifyContent: "center" }}>
         <Text>
           Title: {notification && notification.request.content.title}{" "}
@@ -65,8 +66,8 @@ export default function NotiScreen() {
         title="Press to schedule a notification"
         onPress={async () => {
           await schedulePushNotification();
-        }}
-      />
+        }} */}
+      <StyledText title="Notification Screen"/>
     </View>
   );
 }

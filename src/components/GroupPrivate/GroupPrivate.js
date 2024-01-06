@@ -38,8 +38,7 @@ const GroupPrivate = ({ visible, onPressOut, data }) => {
               {data?.bannerUrl ? (
                 <Image
                   source={{ uri: data.bannerUrl }}
-                  width={100}
-                  height={200}
+                  style={styles.bgImage}
                 />
               ) : (
                 <Image

@@ -252,6 +252,7 @@ const GroupDetailScreen = ({ route }) => {
       style={{
         backgroundColor: userStatus ? colors.white : colors.primary,
         flex: 1,
+
       }}
     >
       <View
