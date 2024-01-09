@@ -44,6 +44,8 @@ import FeedDetailScreen from "./src/screen/FeedDetailScreen/FeedDetailScreen";
 import GroupMemberScreen from "./src/screen/GroupMemberScreen/GroupMemberScreen";
 import ChangeNewPasswordScreen from "./src/screen/ChangNewPasswordScreen/ChangeNewPasswordScreen";
 import MemberRequestScreen from "./src/screen/MembersRequest/MemberRequestScreen";
+import RandomUserScreen from "./src/screen/RandomUserScreen/RandomUserScreen";
+import FollowingScreen from "./src/screen/FollowingScreen/FollowingScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -100,9 +102,10 @@ const GroupStack = () => {
 };
 const FriendStack = ()=>{
   return(
-    <Stack.Navigator initialRouteName="FollowingScreen" screenOptions={{headerShown:false}}>
+    <Stack.Navigator initialRouteName="RecommendScreen" screenOptions={{headerShown:false}}>
       <Stack.Screen name="FollowingScreen" component={FriendScreen}/>
       <Stack.Screen name="FollowerScreen" component={FollowerScreen}/>
+      <Stack.Screen name="RecommendScreen" component={RandomUserScreen}/>
     </Stack.Navigator>
   )
 }

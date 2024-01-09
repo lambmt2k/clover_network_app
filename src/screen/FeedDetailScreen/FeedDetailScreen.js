@@ -204,86 +204,42 @@ const FeedDetailScreen = ({ route }) => {
                 ]}
               >
                 <View style={styles.container}>
-                  {data?.feedItem?.postToUserWall ? (
-                    <View style={{ flexDirection: "row", gap: 6 }}>
-                      <View>
-                        <TouchableOpacity onPress={() => navigation.goBack()}>
-                          <View>
-                            <Ionicons
-                              name="chevron-back"
-                              size={28}
-                              color={colors.primary}
-                            />
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.user}>
-                        <View style={styles.userImageContainer}>
-                          <Image
-                            source={{
-                              uri: data?.authorProfile?.avatarImgUrl,
-                            }}
-                            style={styles.userImage}
-                          />
-                        </View>
-                        <View>
-                          <Pressable
-                            onPress={() => {
-                              navigation.navigate("UserScreen", {
-                                userId: data?.authorProfile.userId,
-                              });
-                            }}
-                          >
-                            <StyledText
-                              title={data?.authorProfile?.displayName}
-                              textStyle={styles.userName}
-                            />
-                          </Pressable>
+                  {data?.groupItem?.groupType === 2 ? (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        gap: 10,
+                        marginBottom: 10,
+                      }}
+                    >
+                      <Pressable onPress={()=>navigation.goBack()}>
+                        <Ionicons
+                          name="chevron-back"
+                          size={24}
+                          color={colors.primary}
+                        />
+                      </Pressable>
 
-                          <Text style={styles.userTime}>
-                            {daysago(data?.feedItem?.updatedTime)}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  ) : (
-                    <View style={{ flexDirection: "row", gap: 6 }}>
-                      <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <View>
-                          <Ionicons
-                            name="chevron-back"
-                            size={28}
-                            color={colors.primary}
-                          />
-                        </View>
-                      </TouchableOpacity>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          gap: 10,
-                          marginBottom: 10,
-                        }}
-                      >
-                        <View>
-                          <View style={styles.groupAvatarCon}>
-                            {data?.groupItem?.bannerUrl ? (
-                              <Image
-                                style={[
-                                  styles.groupAvatar,
-                                  { width: 40, height: 40 },
-                                ]}
-                                source={{ uri: data.groupItem?.bannerUrl }}
-                              />
-                            ) : (
-                              <Image
-                                style={[
-                                  styles.groupAvatar,
-                                  { width: 40, height: 40, borderRadius: 4 },
-                                ]}
-                                source={require("../../assets/img/backGroundDefault.png")}
-                              />
-                            )}
-                            {/* <Image
+                      <View>
+                        <View style={styles.groupAvatarCon}>
+                          {data.groupItem?.bannerUrl ? (
+                            <Image
+                              style={[
+                                styles.groupAvatar,
+                                { width: 40, height: 40 },
+                              ]}
+                              source={{ uri: data.groupItem?.bannerUrl }}
+                            />
+                          ) : (
+                            <Image
+                              style={[
+                                styles.groupAvatar,
+                                { width: 40, height: 40, borderRadius: 4 },
+                              ]}
+                              source={require("../../assets/img/backGroundDefault.png")}
+                            />
+                          )}
+                          {/* <Image
                   source={{
                     uri: data.groupItem?.avatarImgUrl
                       ? data.groupItem?.avatarImgUrl
@@ -291,61 +247,203 @@ const FeedDetailScreen = ({ route }) => {
                   }}
                   style={styles.groupAvatar}
                 /> */}
-                          </View>
-                          <View style={styles.userAvatarCon}>
-                            <Image
-                              source={{
-                                uri: data?.authorProfile?.avatarImgUrl,
-                              }}
-                              style={styles.userAvatar}
-                            />
-                          </View>
                         </View>
-                        <View>
-                          <Pressable
-                            onPress={() =>
-                              navigation.navigate("Groups", {
-                                screen: "GroupDetailScreen",
-                                initial: false,
-                                params: { groupId: data.groupItem.groupId },
-                              })
-                            }
-                          >
+                      </View>
+                      <View>
+                        <Pressable
+                          onPress={() =>
+                            navigation.navigate("Groups", {
+                              screen: "GroupDetailScreen",
+                              initial: false,
+                              params: { groupId: data.groupItem.groupId },
+                            })
+                          }
+                        >
+                          <StyledText
+                            title={data.groupItem?.groupName}
+                            textStyle={styles.groupName}
+                          />
+                        </Pressable>
+
+                        <View
+                          style={{ flexDirection: "row", alignItems: "center" }}
+                        >
+                          <Pressable>
                             <StyledText
-                              title={data?.groupItem?.groupName}
-                              textStyle={styles.groupName}
+                              title="Clover System"
+                              textStyle={styles.system}
                             />
                           </Pressable>
 
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Pressable
-                              onPress={() =>
-                                navigation.navigate("UserScreen", {
-                                  userId: data?.authorProfile?.userId,
-                                })
-                              }
-                            >
-                              <StyledText
-                                title={data?.authorProfile?.displayName}
-                                textStyle={styles.userName}
-                              />
-                            </Pressable>
-
-                            <Entypo name="dot-single" size={12} color="black" />
-                            <StyledText
-                              title={daysago(data?.feedItem?.updatedTime)}
-                              textStyle={styles.timeAgo}
-                            />
-                          </View>
+                          <Entypo
+                            name="dot-single"
+                            size={12}
+                            color={colors.secondary}
+                          />
+                          <StyledText
+                            title={daysago(data.feedItem?.updatedTime)}
+                            textStyle={styles.timeAgo}
+                          />
                         </View>
                       </View>
                     </View>
+                  ) : (
+                    <View>
+                      {data?.feedItem?.postToUserWall ? (
+                        <View style={{ flexDirection: "row", gap: 6 }}>
+                          <View>
+                            <TouchableOpacity
+                              onPress={() => navigation.goBack()}
+                            >
+                              <View>
+                                <Ionicons
+                                  name="chevron-back"
+                                  size={28}
+                                  color={colors.primary}
+                                />
+                              </View>
+                            </TouchableOpacity>
+                          </View>
+                          <View style={styles.user}>
+                            <View style={styles.userImageContainer}>
+                              <Image
+                                source={{
+                                  uri: data?.authorProfile?.avatarImgUrl,
+                                }}
+                                style={styles.userImage}
+                              />
+                            </View>
+                            <View>
+                              <Pressable
+                                onPress={() => {
+                                  navigation.navigate("UserScreen", {
+                                    userId: data?.authorProfile.userId,
+                                  });
+                                }}
+                              >
+                                <StyledText
+                                  title={data?.authorProfile?.displayName}
+                                  textStyle={styles.userName}
+                                />
+                              </Pressable>
+
+                              <Text style={styles.userTime}>
+                                {daysago(data?.feedItem?.updatedTime)}
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+                      ) : (
+                        <View style={{ flexDirection: "row", gap: 6 }}>
+                          <TouchableOpacity onPress={() => navigation.goBack()}>
+                            <View>
+                              <Ionicons
+                                name="chevron-back"
+                                size={28}
+                                color={colors.primary}
+                              />
+                            </View>
+                          </TouchableOpacity>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              gap: 10,
+                              marginBottom: 10,
+                            }}
+                          >
+                            <View>
+                              <View style={styles.groupAvatarCon}>
+                                {data?.groupItem?.bannerUrl ? (
+                                  <Image
+                                    style={[
+                                      styles.groupAvatar,
+                                      { width: 40, height: 40 },
+                                    ]}
+                                    source={{ uri: data.groupItem?.bannerUrl }}
+                                  />
+                                ) : (
+                                  <Image
+                                    style={[
+                                      styles.groupAvatar,
+                                      {
+                                        width: 40,
+                                        height: 40,
+                                        borderRadius: 4,
+                                      },
+                                    ]}
+                                    source={require("../../assets/img/backGroundDefault.png")}
+                                  />
+                                )}
+                                {/* <Image
+                  source={{
+                    uri: data.groupItem?.avatarImgUrl
+                      ? data.groupItem?.avatarImgUrl
+                      : "https://picsum.photos/200/300",
+                  }}
+                  style={styles.groupAvatar}
+                /> */}
+                              </View>
+                              <View style={styles.userAvatarCon}>
+                                <Image
+                                  source={{
+                                    uri: data?.authorProfile?.avatarImgUrl,
+                                  }}
+                                  style={styles.userAvatar}
+                                />
+                              </View>
+                            </View>
+                            <View>
+                              <Pressable
+                                onPress={() =>
+                                  navigation.navigate("Groups", {
+                                    screen: "GroupDetailScreen",
+                                    initial: false,
+                                    params: { groupId: data.groupItem.groupId },
+                                  })
+                                }
+                              >
+                                <StyledText
+                                  title={data?.groupItem?.groupName}
+                                  textStyle={styles.groupName}
+                                />
+                              </Pressable>
+
+                              <View
+                                style={{
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Pressable
+                                  onPress={() =>
+                                    navigation.navigate("UserScreen", {
+                                      userId: data?.authorProfile?.userId,
+                                    })
+                                  }
+                                >
+                                  <StyledText
+                                    title={data?.authorProfile?.displayName}
+                                    textStyle={styles.userName}
+                                  />
+                                </Pressable>
+
+                                <Entypo
+                                  name="dot-single"
+                                  size={12}
+                                  color="black"
+                                />
+                                <StyledText
+                                  title={daysago(data?.feedItem?.updatedTime)}
+                                  textStyle={styles.timeAgo}
+                                />
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      )}
+                    </View>
                   )}
+
                   <View>
                     <Text style={styles.statusText}>
                       {data?.feedItem?.content}

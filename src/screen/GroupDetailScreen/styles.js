@@ -108,7 +108,8 @@ export const styles = StyleSheet.create({
     fontSize: 16,
   },
   flatlistContainer: {
-    flex:1
+    flex:1,
+    backgroundColor:colors.background
   },
   postContainer: {
     backgroundColor: colors.white,

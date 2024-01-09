@@ -41,7 +41,7 @@ const MemberRequestScreen = ({ route }) => {
     // console.log(data)
     GroupApi.approveMember(user.tokenId, data)
       .then((res) => {
-        console.log(res.data);
+        getListWaitingMember();
       })
       .catch((err) => {
         console.log(err);

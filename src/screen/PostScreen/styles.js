@@ -57,7 +57,8 @@ export const styles = StyleSheet.create({
   },
   privacyText:{
     marginLeft:5,
-    fontSize:14
+    fontSize:14,
+    color:"#b1b4b6"
   },
   textArea:{
     flex:1,
@@ -194,7 +195,6 @@ export const styles = StyleSheet.create({
     borderBottomWidth:1
   },
   centeredView:{
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,

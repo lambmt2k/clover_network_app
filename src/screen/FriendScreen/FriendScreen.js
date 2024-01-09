@@ -16,9 +16,12 @@ import { useNavigation } from "@react-navigation/native";
 import StyledText from "../../components/StyledText/StyledText";
 import { styles } from "./styles";
 import { colors } from "../../themes/style";
+import UserApi from "../../apis/User";
 
 const FriendScreen = () => {
   const { user } = useSelector((state) => state.login);
+  const { update } = useSelector((state) => state.friend);
+  
   const navigation = useNavigation();
   const [page, setPage] = useState(0);
   const [listFollowing, setListFollowing] = useState([]);
@@ -35,6 +38,7 @@ const FriendScreen = () => {
       FriendApi.getListFolllowing(user.tokenId, user.userId, page)
         .then((res) => {
           setListFollowing(res.data.data?.userProfiles);
+
           setFetching(false);
         })
         .catch((err) => {
@@ -51,10 +55,12 @@ const FriendScreen = () => {
               setListFollowing(res.data.data?.userProfiles);
               setFirstLoad(false);
             } else {
+              
               const newListFollowingData = [
                 ...listFollowing,
-                ...res.data.data?.userProfiles,
+                ...res.data.data.userProfiles,
               ];
+              
               const uniqueFollowingIds = [];
               //const uniqueFeedsId = [...new Set(newFeedsData.map((it)=>it.feedItem?.postId))]
               const newListFollowing = newListFollowingData.filter((it) => {
@@ -86,13 +92,27 @@ const FriendScreen = () => {
   const renderNoMore = () => {
     return endData ? (
       <View>
-        <StyledText title="You have read all post, Let's post something new" />
+        <StyledText title="You have seen all follower, Let's get something new" />
       </View>
     ) : null;
   };
+  const Unfollow = (userId) => {
+    const data = {
+      targetUserId: userId,
+      status: 0,
+    };
+    UserApi.connectUser(user.tokenId, data)
+      .then((res) => {
+        handleRefesh();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  console.log(update)
   useEffect(() => {
     getFollowingList();
-  }, [page, fetching]);
+  }, [page, fetching,update]);
   const handleLoadMore = () => {
     if (!onEndReachedCalledDuringMomentum) {
       setLoadMore(true);
@@ -107,6 +127,7 @@ const FriendScreen = () => {
       setPage(0);
       setEndData(false);
     }
+
     setFetching(true);
     // console.log("reload");
     // setEndData(false);
@@ -114,17 +135,20 @@ const FriendScreen = () => {
   };
   const renderItem = ({ item }) => {
     return (
-      <Pressable onPress={()=>navigation.navigate("UserScreen",{userId:item.userId})}>
-      <View
-        style={{
-          marginVertical: 4,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingHorizontal: 8,
-        }}
+      <Pressable
+        onPress={() =>
+          navigation.navigate("UserScreen", { userId: item.userId })
+        }
       >
-        
+        <View
+          style={{
+            marginVertical: 4,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingHorizontal: 8,
+          }}
+        >
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
             <Image source={{ uri: item.avatarImgUrl }} style={styles.avatar} />
             <StyledText title={item.displayName} />
@@ -137,6 +161,7 @@ const FriendScreen = () => {
                 backgroundColor: colors.primary,
                 borderRadius: 8,
               }}
+              onPress={() => Unfollow(item.userId)}
             >
               <StyledText
                 title="Unfollow"
@@ -144,8 +169,7 @@ const FriendScreen = () => {
               />
             </TouchableOpacity>
           </View>
-        
-      </View>
+        </View>
       </Pressable>
     );
   };

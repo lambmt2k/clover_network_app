@@ -1,30 +1,30 @@
 import {
   View,
   Text,
-  ActivityIndicator,
-  FlatList,
-  Image,
   TouchableOpacity,
   Pressable,
+  Image,
+  FlatList,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FriendHeader from "../../components/FriendHeader/FriendHeader";
-import { useDispatch, useSelector } from "react-redux";
-import FriendApi from "../../apis/Friend";
+import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import StyledText from "../../components/StyledText/StyledText";
-import { styles } from "./styles";
 import { colors } from "../../themes/style";
-import UserApi from "../../apis/User";
-import { updateFollowingList } from "../../features/Friend/FriendSlice";
+import { styles } from "./styles";
+import FriendApi from "../../apis/Friend";
 
-const FollowerScreen = () => {
+const FollowingScreen = () => {
+  const [listFollowing, setListFollowing] = useState([]);
   const { user } = useSelector((state) => state.login);
   const navigation = useNavigation();
-  const [page, setPage] = useState(0);
-  const [listFollowing, setListFollowing] = useState([]);
+
   const [fetching, setFetching] = useState(false);
+  const [page, setPage] = useState(0);
+
   const [loadMore, setLoadMore] = useState(false);
   const [endData, setEndData] = useState(false);
   const [
@@ -32,10 +32,20 @@ const FollowerScreen = () => {
     setOnEndReachedCalledDuringMomentum,
   ] = useState(true);
   const [firstLoad, setFirstLoad] = useState(true);
-  const dispatch = useDispatch()
+
+  const renderLoader = () => {
+    return loadMore ? (
+      <View>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    ) : null;
+  };
+  const renderNoMore = () => {
+    return endData ? <View></View> : null;
+  };
   const getFollowingList = () => {
     if (fetching) {
-      FriendApi.getListFollower(user.tokenId, user.userId, page)
+      FriendApi.getListFolllowing(user.tokenId, user.userId, page)
         .then((res) => {
           setListFollowing(res.data.data.userProfiles);
           setFetching(false);
@@ -44,9 +54,9 @@ const FollowerScreen = () => {
           console.log(err);
         });
     } else {
-      FriendApi.getListFollower(user.tokenId, user.userId, page)
+      FriendApi.getListFolllowing(user.tokenId, user.userId, page)
         .then((res) => {
-          if (res.data.data.userProfiles === null) {
+          if (res.data.data === null) {
             setLoadMore(false);
             setEndData(true);
           } else {
@@ -63,7 +73,7 @@ const FollowerScreen = () => {
               const newListFollowing = newListFollowingData.filter((it) => {
                 const isDuplicate = uniqueFollowingIds.includes(it.userId);
                 if (!isDuplicate) {
-                  uniqueFollowingIds.push(it.userId);
+                  uniqueFeedIds.push(it.userId);
                   return true;
                 }
                 return false;
@@ -79,23 +89,10 @@ const FollowerScreen = () => {
         });
     }
   };
-  const renderLoader = () => {
-    return loadMore ? (
-      <View>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    ) : null;
-  };
-  const renderNoMore = () => {
-    return endData ? (
-      <View>
-        <StyledText title="You don't have any follower" />
-      </View>
-    ) : null;
-  };
   useEffect(() => {
     getFollowingList();
   }, [page, fetching]);
+
   const handleLoadMore = () => {
     if (!onEndReachedCalledDuringMomentum) {
       setLoadMore(true);
@@ -103,21 +100,6 @@ const FollowerScreen = () => {
         setPage(page + 1);
       }
     }
-  };
-  const follow = (userId) => {
-    const data = {
-      targetUserId: userId,
-      status: 1,
-    };
-    UserApi.connectUser(user.tokenId, data)
-      .then((res) => {
-        dispatch(updateFollowingList())
-        handleRefesh()
-        
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   const handleRefesh = () => {
@@ -151,46 +133,30 @@ const FollowerScreen = () => {
             <StyledText title={item.displayName} />
           </View>
           <View>
-            {item.connected ? <View style={{
-                  paddingHorizontal: 22,
-                  paddingVertical: 12,
-                  backgroundColor: colors.primary,
-                  borderRadius: 8,
-                }}><StyledText
-                  title="Connected"
-                  textStyle={{ color: colors.white }}
-                /></View> : (
-              <TouchableOpacity
-                style={{
-                  paddingHorizontal: 22,
-                  paddingVertical: 12,
-                  backgroundColor: colors.primary,
-                  borderRadius: 8,
-                }}
-                onPress={() => follow(item.userId)}
-              >
-                <StyledText
-                  title="Follow"
-                  textStyle={{ color: colors.white }}
-                />
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              style={{
+                paddingHorizontal: 22,
+                paddingVertical: 12,
+                backgroundColor: colors.primary,
+                borderRadius: 8,
+              }}
+            >
+              <StyledText
+                title="Unfollow"
+                textStyle={{ color: colors.white }}
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </Pressable>
     );
   };
-  const renderEmpty = () => {
-    return (
-      <View>
-        <StyledText title="Try to make some friends" />
-      </View>
-    );
-  };
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <FriendHeader screen="follower" />
-      <View style={{ flex: 1, marginTop: 10, paddingHorizontal: 8 }}>
+    <SafeAreaView style={{flex:1,}}>
+      <FriendHeader screen="following" />
+      <Text>FollowingScreen</Text>
+      <View >
         <FlatList
           data={listFollowing}
           keyExtractor={(item) => item.userId}
@@ -200,7 +166,6 @@ const FollowerScreen = () => {
           ListFooterComponent={endData ? renderNoMore : renderLoader}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0}
-          ListEmptyComponent={renderEmpty}
           onMomentumScrollBegin={() => {
             setOnEndReachedCalledDuringMomentum(false);
           }}
@@ -210,4 +175,4 @@ const FollowerScreen = () => {
   );
 };
 
-export default FollowerScreen;
+export default FollowingScreen;

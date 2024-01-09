@@ -142,7 +142,7 @@ const GroupDetailScreen = ({ route }) => {
   };
 
   const dispatch = useDispatch();
-  const renderItem = ({ item }) => <Post data={item} screen="Group" />;
+  const renderItem = ({ item }) => <Post data={item}  screen="Group"/>;
   const onPressOut = () => {
     setModalVisible(false);
   };
@@ -154,7 +154,7 @@ const GroupDetailScreen = ({ route }) => {
       await ImagePicker.requestMediaLibraryPermissionsAsync();
       res = await ImagePicker.launchImageLibraryAsync({
         allowsEditing: true,
-        aspect: [1, 1],
+        aspect: [4, 2],
         quality: 0.1,
       });
 
@@ -235,6 +235,9 @@ const GroupDetailScreen = ({ route }) => {
       .then((res) => {
         setModalVisible(false);
         getGroupInfo();
+        if(groupInfo.group?.groupPrivacy === "PRIVATE"){
+          navigation.navigate("HomeScreen")
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -250,11 +253,12 @@ const GroupDetailScreen = ({ route }) => {
   return (
     <View
       style={{
-        backgroundColor: userStatus ? colors.white : colors.primary,
+        backgroundColor:userStatus ? colors.white : colors.primary,
         flex: 1,
 
       }}
     >
+    
       <View
         clasName="Header"
         style={[
@@ -395,23 +399,29 @@ const GroupDetailScreen = ({ route }) => {
                       <StyledText title="Private group" />
                     </View>
                     <Entypo name="dot-single" size={12} color="black" />
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 3,
-                      }}
+                    <Pressable
+                      onPress={() =>
+                        navigation.navigate("GroupMemberScreen", { groupInfo })
+                      }
                     >
-                      <StyledText
-                        title={groupInfo.group?.totalMember}
-                        textStyle={{
-                          color: colors.black,
-                          fontFamily: "BeVietnamPro_600SemiBold",
-                          fontSize: 15,
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 3,
                         }}
-                      />
-                      <StyledText title="members" />
-                    </View>
+                      >
+                        <StyledText
+                          title={groupInfo.group?.totalMember}
+                          textStyle={{
+                            color: colors.black,
+                            fontFamily: "BeVietnamPro_600SemiBold",
+                            fontSize: 15,
+                          }}
+                        />
+                        <StyledText title="members" />
+                      </View>
+                    </Pressable>
                   </View>
                 )}
                 {userStatus ? (

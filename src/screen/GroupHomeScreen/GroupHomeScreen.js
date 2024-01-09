@@ -30,7 +30,7 @@ const GroupHomeScreen = () => {
   const renderNoMore = () => {
     return endData ? (
       <View>
-        <StyledText title="You have read all post, Let's post something new" />
+       
       </View>
     ) : null;
   };

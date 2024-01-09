@@ -4,6 +4,7 @@ import {
   Image,
   Pressable,
   TouchableWithoutFeedback,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { styles } from "./styles";
@@ -28,6 +29,7 @@ const Post = ({ data, screen }) => {
   const { postId,liked } = useSelector((state) => state.post);
   const [update, setUpdate] = useState(false);
   const { user } = useSelector((state) => state.login);
+  const [showMore,setShowMore] = useState(false)
   const navigation = useNavigation();
   const handelPress = () => {
     const likeData = {
@@ -44,6 +46,7 @@ const Post = ({ data, screen }) => {
       });
   };
   
+
 
   if (!data) return null;
   const daysago = (postDate) => {
@@ -63,6 +66,17 @@ const Post = ({ data, screen }) => {
       })
       .catch((err) => console.log(err));
   }, [update,postId,liked]);
+  const  onLayout = (event) => {
+    
+    const { height } = event.nativeEvent.layout
+    const  lineHeight  = 14
+    const  maxLine  = 10
+    const maxHeight = maxLine * lineHeight
+
+    if (maxLine > 0 && height > maxHeight) {
+      setShowMore(true)
+    }
+  }
 
   return (
     <View
@@ -140,7 +154,50 @@ const Post = ({ data, screen }) => {
                   />
                 </View>
               </View>
-            </View>) : (<View>{data.feedItem?.postToUserWall || screen === "Group" ? (
+            </View>) : data.feedItem?.toUserId && data.feedItem?.authorId !== data.feedItem?.toUserId ? (<View>
+              <View style={styles.user}>
+              <View style={styles.userImageContainer}>
+                <Image
+                  source={{ uri: data.authorProfile?.avatarImgUrl }}
+                  style={styles.userImage}
+                />
+              </View>
+              <View>
+              <View style={{flexDirection:"row",alignItems:"center",gap:5}}>
+              <Pressable
+                  onPress={() => {
+                    navigation.navigate("UserScreen", {
+                      userId: data?.authorProfile.userId,
+                    });
+                  }}
+                >
+                  <StyledText
+                    title={data?.authorProfile?.displayName}
+                    textStyle={styles.userName}
+                  />
+                </Pressable>
+                <AntDesign name="caretright" size={10} color={colors.secondary} />
+                <Pressable
+                  onPress={() => {
+                    navigation.navigate("UserScreen", {
+                      userId: data?.feedItem.toUserId,
+                    });
+                  }}
+                >
+                  <StyledText
+                    title={data?.groupItem?.groupName}
+                    textStyle={styles.userName}
+                  />
+                </Pressable>
+              </View>
+                
+
+                <Text style={styles.userTime}>
+                  {daysago(data.feedItem.updatedTime)}
+                </Text>
+              </View>
+            </View>
+            </View>) :  (<View>{data.feedItem?.postToUserWall || screen === "Group" ? (
             <View style={styles.user}>
               <View style={styles.userImageContainer}>
                 <Image
@@ -247,7 +304,16 @@ const Post = ({ data, screen }) => {
               source={{ html: `<p>${data.feedItem?.htmlContent}</p>` }}
             /> */}
           <View>
-            <Text style={styles.statusText}>{data.feedItem?.content}</Text>
+            <Text style={styles.statusText} numberOfLines={10} onLayout={(Event)=>onLayout(Event)}>{data.feedItem?.content} </Text>
+            {showMore && <TouchableOpacity onPress={() =>
+                  navigation.navigate("FeedDetail", {
+                    postId: data.feedItem?.postId,
+                  })
+                }>
+            <Text style={styles.showMore}>...See more</Text>
+            </TouchableOpacity>}
+            
+            
           </View>
         </View>
         {data.feedItem?.feedImages && (

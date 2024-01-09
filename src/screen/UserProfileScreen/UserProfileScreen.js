@@ -28,6 +28,7 @@ import { getUserInfo } from "../../features/Auth/UserFeature/UserSlice";
 import PostApi from "../../apis/Post";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import GroupApi from "../../apis/Group";
+import { updateFollowingList } from "../../features/Friend/FriendSlice";
 
 const UserProfileScreen = ({ route }) => {
   const { userId } = route.params;
@@ -47,8 +48,10 @@ const UserProfileScreen = ({ route }) => {
   ] = useState(true);
   const [firstLoad, setFirstLoad] = useState(true);
   const [userProfile, setUserProfile] = useState();
+  const [canPost,setCanPost] = useState()
   const dispatch = useDispatch();
   const [loading,setLoading] = useState(true)
+  const [updateFollow,setUpdateFollow] = useState(false)
   const renderLoader = () => {
     return loadMore ? (
       <View>
@@ -114,6 +117,13 @@ const UserProfileScreen = ({ route }) => {
         });
     }
   };
+  const checkCanPost = ()=>{
+    GroupApi.canPost(user.tokenId,userProfile?.userInfo.userWallId).then(res=>{
+     setCanPost(res.data)
+    }).catch(err=>{
+      console.log(err)
+    })
+  }
   const getUserProfile = () => {
     UserApi.getUserProfile(user.tokenId, userId)
       .then((res) => {
@@ -133,15 +143,30 @@ const UserProfileScreen = ({ route }) => {
     } else setIsOneUser(false);
     
   };
+  const follow = (userId,status) => {
+    const data = {
+      targetUserId: userId,
+      status
+    };
+    UserApi.connectUser(user.tokenId, data)
+      .then((res) => {
+        setUpdateFollow(!updateFollow)
+        dispatch(updateFollowingList())
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   useEffect(() => {
     dispatch(getUserInfo(user.tokenId));
     compareUser();
     
     getUserProfile();
-  }, []);
+  }, [updateFollow]);
   useEffect(() => {
     getFeeds()
+    checkCanPost()
   }, [page, fetching,userProfile]);
 
   const handleLoadMore = () => {
@@ -266,6 +291,14 @@ const UserProfileScreen = ({ route }) => {
   const onChangeBackgroundPress = () => {
     setSavedMode("background"), setModalVisible(true);
   };
+  const renderEmpty = () => {
+    return (
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <MaterialIcons name="article" size={60} color={colors.primary} />
+        <StyledText title="This user doesn't have any post yet" />
+      </View>
+    );
+  };
   // if(loading) return<View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
   //   <ActivityIndicator color={colors.primary} size="large"/>
   // </View>
@@ -291,7 +324,7 @@ const UserProfileScreen = ({ route }) => {
             textStyle={styles.textStyle}
           />
         </View>
-        <MaterialIcons name="mode-edit" size={24} color={colors.primary} />
+        {isOneUser ? <MaterialIcons name="mode-edit" size={24} color={colors.primary}  />:  <View></View>}
       </View>
 
       <View style={{ flex: 1 }}>
@@ -367,11 +400,11 @@ const UserProfileScreen = ({ route }) => {
                   <StyledText title="Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque, illum." />
                 </View> */}
                 {isOneUser ? null : userProfile?.userInfo.connected === false ? (<View>
-                  <TouchableOpacity style={styles.folowBtn}>
+                  <TouchableOpacity style={styles.folowBtn} onPress={()=>follow(userProfile?.userInfo.userId,1)}>
                     <StyledText title="Follow" textStyle={{color:colors.white,fontSize:16}}/>
                   </TouchableOpacity>
                 </View>):(<View>
-                  <TouchableOpacity style={styles.folowBtn}>
+                  <TouchableOpacity style={styles.folowBtn} onPress={()=>follow(userProfile?.userInfo.userId,0)}>
                     <StyledText title="Unfollow" textStyle={{color:colors.white,fontSize:16}}/>
                   </TouchableOpacity>
                 </View>)}
@@ -388,7 +421,7 @@ const UserProfileScreen = ({ route }) => {
                         },
                         styles.newPost,
                       ]}
-                      onPress={() => navigation.navigate("PostScreen")}
+                      onPress={() => navigation.navigate("PostScreen",{screen:"User"})}
                     >
                       <AntDesign name="plus" size={18} color="white" />
                       <StyledText
@@ -424,7 +457,7 @@ const UserProfileScreen = ({ route }) => {
                   </View>
                 ) : null}
               </View>
-              <View className="Post" style={styles.postContainer}>
+              {canPost && <View className="Post" style={styles.postContainer}>
                 <View className="user" style={styles.user}>
                   <View style={styles.userImageContainer}>
                     <Pressable
@@ -440,7 +473,7 @@ const UserProfileScreen = ({ route }) => {
                   </View>
                   <Pressable
                     onPress={() => {
-                      navigation.navigate("PostScreen",{screen: isOneUser ? "User" : "Friend",checkId:userInfo.userId,userWallId:userInfo.userWallId});
+                      navigation.navigate("PostScreen",{screen: isOneUser ? "User" : "Friend",checkId:isOneUser? userInfo.userId :userProfile?.userInfo.userId,userWallId:isOneUser ? userInfo.userWallId : userProfile?.userInfo.userWallId});
                     }}
                     style={({ pressed }) => [
                       {
@@ -464,7 +497,8 @@ const UserProfileScreen = ({ route }) => {
                     color={colors.primary}
                   />
                 </View>
-              </View>
+              </View>}
+              
             </View>
           }
           data={feeds}
@@ -474,6 +508,7 @@ const UserProfileScreen = ({ route }) => {
           refreshing={fetching}
           ListFooterComponent={endData ? renderNoMore : renderLoader}
           onEndReached={handleLoadMore}
+          ListEmptyComponent={renderEmpty}
           onEndReachedThreshold={0}
           onMomentumScrollBegin={() => {
             setOnEndReachedCalledDuringMomentum(false);

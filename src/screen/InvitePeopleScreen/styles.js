@@ -17,5 +17,12 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     fontFamily: "BeVietnamPro_500Medium",
     color: colors.primary,
+  },
+  avatar:{
+    width:60,
+    height:60,
+    borderRadius:30,
+    borderWidth:1,
+    borderColor:colors.primary
   }
 });

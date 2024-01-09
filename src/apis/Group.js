@@ -27,6 +27,9 @@ const GroupApi = {
   },
   approveMember(token,data){
     return callApi(`group/approve-member`,"POST",data,token)
+  },
+  canPost(token,groupId){
+    return callApi(`group/canPost?groupId=${groupId}`,"GET",null,token)
   }
   
 };

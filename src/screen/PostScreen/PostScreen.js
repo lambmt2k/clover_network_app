@@ -26,17 +26,18 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import PostApi from "../../apis/Post";
 import { BASE_URL_V2 } from "../../settings/apiConfig";
 import { useRef } from "react";
+import { FontAwesome5 } from "@expo/vector-icons";
 
-const PostScreen = ({route}) => {
-  const {screen,checkId,userWallId} = route.params
-  
+const PostScreen = ({ route }) => {
+  const { screen, checkId, userWallId } = route.params;
+
   const navigation = useNavigation();
   const { userInfo } = useSelector((state) => state.user);
   const { user } = useSelector((state) => state.login);
   const [listImage, setListImage] = useState([]);
   const [visible, setVisible] = useState(false);
   const [content, setContent] = useState("");
-  const [privacy, setPrivacy] = useState("PRIVATE");
+  const [privacy, setPrivacy] = useState("PUBLIC");
   const [changeDisplayModal, setChangeDisplayModal] = useState(true);
   const [imageData, setImageData] = useState([]);
   const [errorModal, setErrorModal] = useState(false);
@@ -172,26 +173,27 @@ const PostScreen = ({route}) => {
   const handleChosePrivacy = (status) => {
     if (status === "PUBLIC") {
       setPrivacy("PUBLIC");
+    } else if (status === "FRIEND") {
+      setPrivacy("FRIEND");
     } else {
-      setPrivacy("PRIVATE");
+      setPrivacy("ONLY_ME");
     }
   };
   const handlePost = () => {
-    let feedItem={}
-    if(screen === "User"){
+    let feedItem = {};
+    if (screen === "User") {
       feedItem = {
         authorId: userInfo.userId,
         content: content,
         htmlContent: content,
         postToUserWall: true,
         privacyGroupId: userInfo.userWallId,
-        privacyType: "PUBLIC",
+        privacyType: privacy,
         toUserId: null,
       };
     }
-    
-  
-    if(screen === "Group"){
+
+    if (screen === "Group") {
       feedItem = {
         authorId: userInfo.userId,
         content: content,
@@ -202,7 +204,8 @@ const PostScreen = ({route}) => {
         toUserId: null,
       };
     }
-    if(screen === "Friend"){
+    console.log(screen);
+    if (screen === "Friend") {
       feedItem = {
         authorId: userInfo.userId,
         content: content,
@@ -213,7 +216,7 @@ const PostScreen = ({route}) => {
         toUserId: checkId,
       };
     }
-    
+    console.log(feedItem);
 
     // const newItem = JSON.stringify(feedItem);
     // const blobData = new Blob([newItem], { type: "application/json" });
@@ -234,11 +237,10 @@ const PostScreen = ({route}) => {
         });
       });
     }
-    //formData.append("images",imageData);
+    formData.append("images", imageData);
 
     PostApi.createPost(user.tokenId, formData)
       .then((res) => {
-        console.log(res.data);
         navigation.goBack();
       })
       .catch((err) => {
@@ -279,14 +281,19 @@ const PostScreen = ({route}) => {
               textStyle={styles.username}
             />
             <View>
-              <TouchableOpacity onPress={handlePressPrivacy}>
-                {privacy === "PRIVATE" ? (
+            {screen === "User" ?<TouchableOpacity onPress={handlePressPrivacy}>
+                {privacy === "ONLY_ME" ? (
                   <View style={styles.privacy}>
                     <FontAwesome name="lock" size={14} color="#b1b4b6" />
                     <StyledText
-                      title="Private"
+                      title="Only Me"
                       textStyle={styles.privacyText}
                     />
+                  </View>
+                ) : privacy === "FRIEND" ? (
+                  <View style={styles.privacy}>
+                    <FontAwesome5 name="user-friends" size={14} color="#b1b4b6" />
+                    <StyledText title="Friend" textStyle={styles.privacyText} />
                   </View>
                 ) : (
                   <View style={styles.privacy}>
@@ -294,7 +301,8 @@ const PostScreen = ({route}) => {
                     <StyledText title="Public" textStyle={styles.privacyText} />
                   </View>
                 )}
-              </TouchableOpacity>
+              </TouchableOpacity>:null}
+              
             </View>
           </View>
         </View>
@@ -380,11 +388,7 @@ const PostScreen = ({route}) => {
                           }}
                         />
                         <StyledText
-                          title="Anyone can see members and news from your group"
-                          textStyle={{ fontSize: 14 }}
-                        />
-                        <StyledText
-                          title="( You can change to private later )"
+                          title="(Everyone on Clover )"
                           textStyle={{
                             fontSize: 12,
                             color: colors.secondary,
@@ -410,7 +414,53 @@ const PostScreen = ({route}) => {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.groupPrivacy}
-                    onPress={() => handleChosePrivacy("PRIVATE")}
+                    onPress={() => handleChosePrivacy("FRIEND")}
+                  >
+                    <View style={styles.privacyIcon}>
+                      <FontAwesome5
+                        name="user-friends"
+                        size={24}
+                        color="black"
+                      />
+                    </View>
+
+                    <View style={styles.groupPrivacyRight}>
+                      <View style={{ width: 280 }}>
+                        <StyledText
+                          title="Friends"
+                          textStyle={{
+                            fontSize: 16,
+                            fontFamily: "BeVietnamPro_500Medium",
+                          }}
+                        />
+                        <StyledText
+                          title="(Only your Friends )"
+                          textStyle={{
+                            fontSize: 12,
+                            color: colors.secondary,
+                          }}
+                        />
+                      </View>
+                      <View>
+                        {privacy === "FRIEND" ? (
+                          <Ionicons
+                            name="radio-button-on"
+                            size={24}
+                            color="black"
+                          />
+                        ) : (
+                          <Ionicons
+                            name="radio-button-off"
+                            size={24}
+                            color="black"
+                          />
+                        )}
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.groupPrivacy}
+                    onPress={() => handleChosePrivacy("ONLY_ME")}
                   >
                     <View style={styles.privacyIcon}>
                       <FontAwesome name="lock" size={24} color="black" />
@@ -419,18 +469,15 @@ const PostScreen = ({route}) => {
                     <View style={styles.groupPrivacyRight}>
                       <View style={{ width: 280 }}>
                         <StyledText
-                          title="Private"
+                          title="Only Me"
                           textStyle={{
                             fontSize: 16,
                             fontFamily: "BeVietnamPro_500Medium",
                           }}
                         />
+
                         <StyledText
-                          title="Only group members can see members and news from your group"
-                          textStyle={{ fontSize: 14 }}
-                        />
-                        <StyledText
-                          title="( You can change to private later )"
+                          title="(Only you )"
                           textStyle={{
                             fontSize: 12,
                             color: colors.secondary,
@@ -438,7 +485,7 @@ const PostScreen = ({route}) => {
                         />
                       </View>
                       <View>
-                        {privacy === "PRIVATE" ? (
+                        {privacy === "ONLY_ME" ? (
                           <Ionicons
                             name="radio-button-on"
                             size={24}
@@ -463,10 +510,16 @@ const PostScreen = ({route}) => {
       {
         <View style={styles.centeredView}>
           <Modal animationType="slide" transparent={true} visible={errorModal}>
-            <Pressable style={styles.outside} onPress={() => setErrorModal(false)}>
+            <Pressable
+              style={styles.outside}
+              onPress={() => setErrorModal(false)}
+            >
               <View style={styles.centeredView}>
                 <View style={styles.modalViewError}>
-                  <StyledText title="Your images too large! Please chose again!" textStyle={styles.modalErrorText} />
+                  <StyledText
+                    title="Your images too large! Please chose again!"
+                    textStyle={styles.modalErrorText}
+                  />
                   <Entypo name="emoji-sad" size={24} color={colors.primary} />
                 </View>
               </View>

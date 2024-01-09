@@ -6,6 +6,7 @@ import persistStore from 'redux-persist/es/persistStore';
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import userReducer from "./src/features/Auth/UserFeature/UserSlice"
 import postReducer from "./src/features/Post/PostSlice"
+import friendReducer from "./src/features/Friend/FriendSlice"
 
 
 
@@ -24,7 +25,8 @@ const userPersistConfig = {
 const rootReducer = combineReducers({
   login:  persistReducer(userPersistConfig, loginReducer),
   user: userReducer,
-  post: postReducer
+  post: postReducer,
+  friend: friendReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

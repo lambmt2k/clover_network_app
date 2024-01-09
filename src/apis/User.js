@@ -15,6 +15,9 @@ const UserApi = {
     },
     updateUserBackGround(token,data){
         return callApi(`user/change-user-banner`,"POST",data,token)
+    },
+    connectUser(token,data){
+        return callApi(`connection/connect-user`,"POST",data,token)
     }
 }
 

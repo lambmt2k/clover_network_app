@@ -14,7 +14,7 @@ const postSlice = createSlice({
   reducers: {
     updatePost:(state,action)=>{
         state.postId= action.payload;
-        state.liked = !state.liked
+        state.liked = action.payload
     }
   },
 });

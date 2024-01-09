@@ -21,9 +21,10 @@ export const styles = StyleSheet.create({
   },
   tab: {
     backgroundColor: colors.secondary,
-    height: 40,
+    height: 44,
     flexDirection:"row",
-    alignItems: "flex-end",
+    alignItems: "center",
+    justifyContent:"center",
     borderRadius:25,
     paddingVertical:10,
     paddingHorizontal:8
@@ -34,4 +35,7 @@ export const styles = StyleSheet.create({
   yourGroupTab: {
     width: 120,
   },
+  recommend:{
+    width:140
+  }
 });

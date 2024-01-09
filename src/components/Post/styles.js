@@ -148,5 +148,9 @@ export const styles = StyleSheet.create({
   system:{
     fontSize:13,
     color:colors.secondary
+  },
+  showMore:{
+    fontFamily:"BeVietnamPro_500Medium_Italic",
+    color:colors.secondary
   }
 });

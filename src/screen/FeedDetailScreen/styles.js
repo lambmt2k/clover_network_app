@@ -141,10 +141,6 @@ export const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "BeVietnamPro_500Medium",
   },
-  timeAgo: {
-    fontSize: 13,
-    fontFamily:"BeVietnamPro_300Light"
-  },
   userCmtAvt:{
     width:46,
     height:46,
@@ -156,5 +152,14 @@ export const styles = StyleSheet.create({
     paddingHorizontal:8,
     paddingVertical:10,
     borderRadius:8
-  }
+  },
+  system:{
+    fontSize:13,
+    color:colors.secondary
+  },
+  timeAgo: {
+    fontSize: 13,
+    color:colors.secondary,
+    fontFamily:"BeVietnamPro_300Light"
+  },
 });
